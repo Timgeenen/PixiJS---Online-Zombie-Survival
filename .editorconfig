@@ -1,0 +1,62 @@
+# Top-most EditorConfig file
+root = true
+
+# These settings apply to all files in the project
+[*]
+# Use 2 spaces for indentation
+indent_style = space
+indent_size = 2
+
+# End files with a new line
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Set the max line length to 100 (adjustable depending on your team's convention)
+max_line_length = 100
+
+# For JavaScript/TypeScript files
+[*.{js,ts,jsx,tsx}]
+# Use spaces for indentation (4 spaces)
+indent_style = space
+indent_size = 4
+# Use LF line endings
+end_of_line = lf
+# Ensure no trailing spaces
+trim_trailing_whitespace = true
+# Ensure a final newline at the end of each file
+insert_final_newline = true
+
+# For JSON files
+[*.json]
+# No indentation for JSON files
+indent_style = space
+indent_size = 2
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# For Markdown files
+[*.md]
+# Use 2 spaces for indentation
+indent_style = space
+indent_size = 2
+# Ensure files end with a new line
+insert_final_newline = true
+
+# For YAML files (e.g., .eslintrc.yml)
+[*.yml]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# For TypeScript configuration files (e.g., tsconfig.json)
+[tsconfig.json]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true

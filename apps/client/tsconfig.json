@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@Animations/*": ["src/assets/animations/*"],
+      "@GameAssets/*": ["src/assets/game/*"],
+      "@Images/*": ["src/assets/images/*"],
+      "@Styles/*": ["src/assets/styles/*"],
+      "@Components/*": ["src/components/*"],
+      "@Data/*": ["src/data/*"],
+      "@Features/*": ["src/features/*"],
+      "@Hooks/*": ["src/hooks/*"],
+      "@Library/*": ["src/lib/*"],
+      "@Pages/*": ["src/pages/*"],
+      "@Routes/*": ["src/routes/*"],
+      "@Services/*": ["src/services/*"],
+      "@Store/*": ["src/store/*"],
+      "@Types/*": ["src/types/*"],
+      "@Utils/*": ["src/utils/*"],
+    }
+  }
+}
