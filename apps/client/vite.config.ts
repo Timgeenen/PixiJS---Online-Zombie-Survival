@@ -15,6 +15,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@Animations": path.resolve(__dirname, "src/assets/animations"),
+      "@API": path.resolve(__dirname, "src/api/index.ts"),
       "@GameAssets": path.resolve(__dirname, "src/assets/game"),
       "@Images": path.resolve(__dirname, "src/assets/images"),
       "@Styles": path.resolve(__dirname, "src/assets/styles"),

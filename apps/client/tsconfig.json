@@ -9,6 +9,7 @@
     "baseUrl": ".",
     "paths": {
       "@Animations/*": ["src/assets/animations/*"],
+      "@API": ["src/api/index.ts"],
       "@GameAssets/*": ["src/assets/game/*"],
       "@Images/*": ["src/assets/images/*"],
       "@Styles/*": ["src/assets/styles/*"],
