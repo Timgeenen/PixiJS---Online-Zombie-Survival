@@ -1,4 +1,4 @@
-import AppRouter from '@Routes/index';
+import { AppRouter } from '@Routes';
 import { BrowserRouter as Router } from 'react-router';
 
 function App() {

@@ -1,4 +1,4 @@
-import { LoginForm } from '@Features/authentication';
+import { LoginForm } from '@Auth';
 
 function Login() {
     return (
