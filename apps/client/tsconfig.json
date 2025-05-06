@@ -12,7 +12,7 @@
       "@GameAssets/*": ["src/assets/game/*"],
       "@Images/*": ["src/assets/images/*"],
       "@Styles/*": ["src/assets/styles/*"],
-      "@Components/*": ["src/components/*"],
+      "@Components": ["src/components/index.ts"],
       "@Data/*": ["src/data/*"],
       "@Features/*": ["src/features/*"],
       "@Hooks/*": ["src/hooks/*"],

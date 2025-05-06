@@ -18,7 +18,7 @@ export default defineConfig({
       "@GameAssets": path.resolve(__dirname, "src/assets/game"),
       "@Images": path.resolve(__dirname, "src/assets/images"),
       "@Styles": path.resolve(__dirname, "src/assets/styles"),
-      "@Components": path.resolve(__dirname, "src/components"),
+      "@Components": path.resolve(__dirname, "src/components/index.ts"),
       "@Data": path.resolve(__dirname, "src/data"),
       "@Features": path.resolve(__dirname, "src/features"),
       "@Hooks": path.resolve(__dirname, "src/hooks"),
