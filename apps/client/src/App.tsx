@@ -1,8 +1,11 @@
+import AppRouter from '@Routes/index';
+import { BrowserRouter as Router } from 'react-router';
+
 function App() {
     return (
-        <>
-            <div className="text-9xl">Hello React</div>
-        </>
+        <Router>
+            <AppRouter />
+        </Router>
     );
 }
 
