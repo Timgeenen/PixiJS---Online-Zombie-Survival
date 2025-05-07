@@ -6,7 +6,7 @@ function Input({ ...props }: ComponentPropsWithRef<'input'>) {
         <>
             <input
                 {...props}
-                className={clsx('border-green-400 border-2 rounded bg-slate-400', props.className)}
+                className={clsx('border-green-400 border-2 rounded h-8', props.className)}
             />
         </>
     );

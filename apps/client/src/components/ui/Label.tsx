@@ -8,7 +8,7 @@ function Label({
     htmlFor: string;
 }) {
     return (
-        <label {...props} htmlFor={htmlFor} className={clsx('text-sm', props.className)}>
+        <label {...props} htmlFor={htmlFor} className={clsx('text-sm ml-1', props.className)}>
             {htmlFor}
         </label>
     );
