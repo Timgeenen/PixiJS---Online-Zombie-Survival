@@ -1,4 +1,1 @@
-export interface User {
-    name: String;
-    email: String;
-}
+export * from './utils/index';

@@ -1,4 +1,4 @@
-import { LeaderboardsContainer } from '@Features/leaderboards';
+import { LeaderboardsContainer } from '@Leaderboards';
 
 function Leaderboards() {
     return (

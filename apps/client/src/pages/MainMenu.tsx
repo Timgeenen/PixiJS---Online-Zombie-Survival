@@ -1,4 +1,4 @@
-import { MainMenuContainer } from '@Features/mainMenu';
+import { MainMenuContainer } from '@MainMenu';
 
 function MainMenu() {
     return (

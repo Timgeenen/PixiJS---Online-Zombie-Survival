@@ -1,4 +1,4 @@
-import { LobbySettingsContainer } from '@Features/lobbySettings';
+import { LobbySettingsContainer } from '@LobbySettings';
 
 function LobbySettings() {
     return (

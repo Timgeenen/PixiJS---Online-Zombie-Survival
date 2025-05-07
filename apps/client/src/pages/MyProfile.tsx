@@ -1,4 +1,4 @@
-import { MyProfileContainer } from '@Features/myProfile';
+import { MyProfileContainer } from '@MyProfile';
 
 function MyProfile() {
     return (

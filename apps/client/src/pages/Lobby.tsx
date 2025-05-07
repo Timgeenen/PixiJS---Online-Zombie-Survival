@@ -1,4 +1,4 @@
-import { LobbyContainer } from '@Features/lobby';
+import { LobbyContainer } from '@Lobby';
 
 function Lobby() {
     return (

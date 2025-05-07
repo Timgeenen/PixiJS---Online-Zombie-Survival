@@ -1,4 +1,4 @@
-import { SettingsContainer } from '@Features/settings';
+import { SettingsContainer } from '@Settings';
 
 function Settings() {
     return (

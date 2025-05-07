@@ -1,4 +1,4 @@
-import { GameContainer } from '@Features/game';
+import { GameContainer } from '@Game';
 
 function Game() {
     return (
