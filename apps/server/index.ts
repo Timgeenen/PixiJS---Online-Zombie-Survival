@@ -9,7 +9,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use('/api', router)
+app.use('/api', router);
 
 app.listen(process.env.PORT, () => {
     console.log(`server listening on ${process.env.PORT}`);

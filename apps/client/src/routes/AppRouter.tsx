@@ -1,4 +1,14 @@
-import { Game, Leaderboards, Lobby, LobbyList, LobbySettings, Login, MainMenu, MyProfile, Settings } from '@Pages';
+import {
+    Game,
+    Leaderboards,
+    Lobby,
+    LobbyList,
+    LobbySettings,
+    Login,
+    MainMenu,
+    MyProfile,
+    Settings,
+} from '@Pages';
 import { Route, Routes } from 'react-router';
 
 function AppRouter() {
