@@ -21,22 +21,34 @@ exports.login = (req: Request, res: Response) => {
             error: 'Invalid credentials',
         });
     }
-//TODO: fix encryption
-    bcrypt.compare(password, user.password, (err: Error | undefined, isMatch: boolean) => {
-        if (isMatch) {
-            const token = jwt.sign(
-                { id: user.id, username: user.username },
-                process.env.JWT_SECRET,
-                {
-                    expiresIn: '20min',
-                },
-            );
-            res.json({ token });
-        } else {
-            res.status(401).json({ error: 'Invalid credentials' });
-        }
-    });
+
+    res.json({ user: user });
+    //TODO: add encryption
+    //TODO: add to database
+    // bcrypt.compare(password, user.password, (err: Error | undefined, isMatch: boolean) => {
+    //     if (isMatch) {
+    //         const token = jwt.sign(
+    //             { id: user.id, username: user.username },
+    //             process.env.JWT_SECRET,
+    //             {
+    //                 expiresIn: '20min',
+    //             },
+    //         );
+    //         res.json({ token });
+    //     } else {
+    //         res.status(401).json({ error: 'Invalid credentials' });
+    //     }
+    // });
 };
+
+exports.register = (req: Request, res: Response) => {}; //TODO
+
+exports.guestLogin = (req: Request, res: Response) => {
+    res.json({ user: {
+        id: 420,
+        username: "guest",
+    }})
+}
 
 exports.validateToken = (req: Request, res: Response) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
