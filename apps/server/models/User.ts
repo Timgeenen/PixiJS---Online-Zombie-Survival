@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
-    name: {
+    username: {
         type: String,
         required: true,
     },
@@ -12,6 +12,13 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+});
+
+UserSchema.set('toJSON', {
+    transform: (doc, ret) => {
+        delete ret.password;
+        return ret;
     },
 });
 
