@@ -1,4 +1,5 @@
 import { hashPassword } from '@Utils/hash';
+import { BadRequestError, ConflictError, InternalServerError } from 'errors/customErrors';
 import type { Request, Response } from 'express';
 import { createNewUser, isEmailTaken, isUsernameTaken } from 'services/userService';
 
@@ -47,29 +48,23 @@ exports.register = async (req: Request, res: Response) => {
         const { username, email, password } = req.body;
 
         if (!username || !email || !password) {
-            return res.status(400).json({
-                msg: `Missing credentials: ${!username && 'username, '} ${!email && 'email, '} ${!password && 'password'}`,
-            });
+            throw new BadRequestError(
+                `Missing credentials: ${!username && 'username, '} ${!email && 'email, '} ${!password && 'password'}`,
+            );
         }
 
         if (await isUsernameTaken(username)) {
-            return res.status(409).json({
-                msg: 'Username is already in use',
-            });
+            throw new ConflictError('Username is already in use');
         }
 
         if (await isEmailTaken(email)) {
-            return res.status(409).json({
-                msg: 'Email is already registered',
-            });
+            throw new ConflictError('Email is already registered');
         }
 
         const hashedPassword = await hashPassword(password);
 
         if (!hashedPassword) {
-            return res.status(500).json({
-                msg: 'Password encryption failed',
-            });
+            throw new InternalServerError('Password encryption failed');
         }
 
         const user = await createNewUser({
@@ -79,12 +74,11 @@ exports.register = async (req: Request, res: Response) => {
         });
 
         res.status(201).json({
-            msg: 'User registered',
-            user,
+            success: true,
+            data: user,
         });
     } catch (error) {
-        console.error('Error in authController: ', error);
-        res.status(500).json({ msg: 'Server error during registration' });
+        throw new InternalServerError('Error in authController.register');
     }
 };
 
