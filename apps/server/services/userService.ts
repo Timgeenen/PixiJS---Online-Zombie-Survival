@@ -12,6 +12,9 @@ export async function isEmailTaken(email: string) {
 }
 
 export async function createNewUser(credentials: Credentials) {
-    const user = await User.create(credentials);
-    return user;
+    return await User.create(credentials);
+}
+
+export async function findUserByUsername(username: string) {
+    return await User.findOne({ username });
 }

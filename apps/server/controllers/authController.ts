@@ -1,48 +1,35 @@
-import type { ApiResponse } from '@monorepo/shared';
 import { sendSuccess } from '@Utils/apiResponse';
-import { hashPassword } from '@Utils/hash';
-import { BadRequestError, ConflictError, InternalServerError } from 'errors/customErrors';
+import { comparePassword, hashPassword } from '@Utils/hash';
+import { AuthError, BadRequestError, ConflictError, InternalServerError, NotFoundError } from 'errors/customErrors';
 import type { Request, Response } from 'express';
-import { createNewUser, isEmailTaken, isUsernameTaken } from 'services/userService';
+import { createNewUser, findUserByUsername, isEmailTaken, isUsernameTaken } from 'services/userService';
 
 const jwt = require('jsonwebtoken');
 
-const users = [
-    {
-        id: 1,
-        username: 'user1',
-        password: 'vHVnhCyY2I/bpkwOgoXfBqvUbNU=',
-    },
-];
-
 exports.login = async (req: Request, res: Response) => {
-    const { username, password } = req.body;
+    try {
+        const { username, password } = req.body;
+    
+        if (!username || !password) {
+            throw new BadRequestError(`Missing credentials: ${!username && "username, "}${!password && "password"}`);
+        }
 
-    const user = users.find((u) => u.username === username);
+        const user = await findUserByUsername(username);
+    
+        if (!user) {
+            throw new NotFoundError("User not found");
+        }
 
-    if (!user) {
-        return res.status(401).json({
-            error: 'Invalid credentials',
-        });
+        const match = await comparePassword(password, user.password);
+
+        if (!match) {
+            throw new AuthError('Invalid password');
+        }
+
+        sendSuccess(res, user, 201, "Log in success");
+    } catch (error) {
+        throw new InternalServerError('Error occurred while trying to log in')
     }
-
-    res.json({ user: user });
-    //TODO: add encryption
-    //TODO: add to database
-    // bcrypt.compare(password, user.password, (err: Error | undefined, isMatch: boolean) => {
-    //     if (isMatch) {
-    //         const token = jwt.sign(
-    //             { id: user.id, username: user.username },
-    //             process.env.JWT_SECRET,
-    //             {
-    //                 expiresIn: '20min',
-    //             },
-    //         );
-    //         res.json({ token });
-    //     } else {
-    //         res.status(401).json({ error: 'Invalid credentials' });
-    //     }
-    // });
 };
 
 exports.register = async (req: Request, res: Response) => {
@@ -90,15 +77,15 @@ exports.guestLogin = (req: Request, res: Response) => {
     });
 };
 
-exports.validateToken = (req: Request, res: Response) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-        res.status(401).json({ error: 'No token provided' });
-    }
-    try {
-        const decoded = jwt.validateToken(token, process.env.JWT_SECRET);
-        res.json({ user: { id: decoded.id, username: decoded.username } });
-    } catch (err) {
-        res.status(401).json({ error: 'Invalid token' });
-    }
-};
+// exports.validateToken = (req: Request, res: Response) => {
+//     const token = req.header('Authorization')?.replace('Bearer ', '');
+//     if (!token) {
+//         res.status(401).json({ error: 'No token provided' });
+//     }
+//     try {
+//         const decoded = jwt.validateToken(token, process.env.JWT_SECRET);
+//         res.json({ user: { id: decoded.id, username: decoded.username } });
+//     } catch (err) {
+//         res.status(401).json({ error: 'Invalid token' });
+//     }
+// };
