@@ -1,3 +1,5 @@
+import type { ApiResponse } from '@monorepo/shared';
+import { sendSuccess } from '@Utils/apiResponse';
 import { hashPassword } from '@Utils/hash';
 import { BadRequestError, ConflictError, InternalServerError } from 'errors/customErrors';
 import type { Request, Response } from 'express';
@@ -73,10 +75,7 @@ exports.register = async (req: Request, res: Response) => {
             password: hashedPassword,
         });
 
-        res.status(201).json({
-            success: true,
-            data: user,
-        });
+        sendSuccess(res, user, 201, "Successfuly created user");
     } catch (error) {
         throw new InternalServerError('Error in authController.register');
     }

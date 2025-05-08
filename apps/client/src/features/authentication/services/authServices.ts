@@ -1,5 +1,5 @@
 import { HTTPClient } from '@API';
-import type { Credentials } from '../types';
+import type { Credentials } from '@monorepo/shared';
 
 export async function login(credentials: Credentials) {
     const response = await HTTPClient.post('/api/auth/login', credentials);
