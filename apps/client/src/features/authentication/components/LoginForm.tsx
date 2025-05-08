@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
 import { login, register } from '../services/authServices';
-import type { Credentials, FormType, InputRefs } from '../types';
+import type { FormType, InputRefs } from '../types';
 import CredentialFields from './CredentialFields';
 import FormButtons from './FormButtons';
 import FormFooter from './FormFooter';
+import type { Credentials } from '@monorepo/shared';
 
 function LoginForm() {
     const [currentForm, setCurrentForm] = useState<FormType>('login');

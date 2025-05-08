@@ -1,7 +1,8 @@
+import { hashPassword } from '@Utils/hash';
 import type { Request, Response } from 'express';
+import { createNewUser, isEmailTaken, isUsernameTaken } from 'services/userService';
 
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 
 const users = [
     {
@@ -11,7 +12,7 @@ const users = [
     },
 ];
 
-exports.login = (req: Request, res: Response) => {
+exports.login = async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     const user = users.find((u) => u.username === username);
@@ -41,14 +42,62 @@ exports.login = (req: Request, res: Response) => {
     // });
 };
 
-exports.register = (req: Request, res: Response) => {}; //TODO
+exports.register = async (req: Request, res: Response) => {
+    try {
+        const { username, email, password } = req.body;
+    
+        if (!username || !email || !password) {
+            return res.status(400).json({
+                msg: `Missing credentials: ${!username && 'username, '} ${!email && 'email, '} ${!password && 'password'}`,
+            });
+        }
+    
+        if (await isUsernameTaken(username)) {
+            return res.status(409).json({
+                msg: 'Username is already in use',
+            });
+        }
+    
+        if (await isEmailTaken(email)) {
+            return res.status(409).json({
+                msg: 'Email is already registered',
+            });
+        }
+    
+        const hashedPassword = await hashPassword(password);
+    
+        if (!hashedPassword) {
+            return res.status(500).json({
+                msg: "Password encryption failed"
+            });
+        }
+
+        const user = await createNewUser({
+            username,
+            email,
+            password: hashedPassword,
+        });
+
+        res.status(201).json({
+            msg: "User registered",
+            user
+        })
+        
+    } catch (error) {
+        console.error("Error in authController: ", error);
+        res.status(500).json({ msg: "Server error during registration"});
+    }
+
+};
 
 exports.guestLogin = (req: Request, res: Response) => {
-    res.json({ user: {
-        id: 420,
-        username: "guest",
-    }})
-}
+    res.json({
+        user: {
+            id: 420,
+            username: 'guest',
+        },
+    });
+};
 
 exports.validateToken = (req: Request, res: Response) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
