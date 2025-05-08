@@ -20,6 +20,12 @@ export class AuthError extends AppError {
     }
 }
 
+export class NotFoundError extends AppError {
+    constructor(message = 'Not Found') {
+        super(message, 404);
+    }
+}
+
 export class ConflictError extends AppError {
     constructor(message = 'Conflict Error') {
         super(message, 409);
