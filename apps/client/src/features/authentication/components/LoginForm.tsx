@@ -1,10 +1,10 @@
+import type { Credentials } from '@monorepo/shared';
 import { useRef, useState } from 'react';
-import { login, register } from '../services/authServices';
+import { guestLogin, login, register } from '../services/authServices';
 import type { FormType, InputRefs } from '../types';
 import CredentialFields from './CredentialFields';
 import FormButtons from './FormButtons';
 import FormFooter from './FormFooter';
-import type { Credentials } from '@monorepo/shared';
 
 function LoginForm() {
     const [currentForm, setCurrentForm] = useState<FormType>('login');
@@ -32,10 +32,6 @@ function LoginForm() {
     }
 
     const handleSubmit = currentForm === 'login' ? login : register;
-
-    function guestLogin() {
-        console.log('CREATE GUEST USER');
-    }
 
     return (
         <div className="flex flex-col gap-2 items-center justify-center">
