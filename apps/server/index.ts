@@ -5,13 +5,23 @@ import router from '@Routes/index';
 const dotenv = require('dotenv');
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 dotenv.config();
 
 const app = express();
 
+const corsOptions = {
+    origin:
+        process.env.NODE_ENV === 'production'
+            ? process.env.CLIENT_URL
+            : process.env.CLIENT_LOCALHOST,
+    credentials: true,
+};
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use('/api', router);
 
 connectDB();
