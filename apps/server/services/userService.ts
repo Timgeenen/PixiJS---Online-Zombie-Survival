@@ -18,3 +18,7 @@ export async function createNewUser(credentials: Credentials) {
 export async function findUserByUsername(username: string) {
     return await User.findOne({ username });
 }
+
+export async function findUserById(userId: string) {
+    return await User.findOne({ _id: userId });
+}
