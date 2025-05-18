@@ -1,11 +1,6 @@
 {
-  "references": [
-    { "path": "./apps/client" },
-    { "path": "./apps/server" },
-    { "path": "./packages/shared" }
-  ],
   "compilerOptions": {
-    "preserveSymlinks": true,
+    "composite": true,
     "moduleResolution": "node",
   },
   "exclude": ["node_modules", "dist"]
