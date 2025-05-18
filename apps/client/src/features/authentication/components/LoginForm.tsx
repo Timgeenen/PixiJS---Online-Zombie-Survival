@@ -45,7 +45,9 @@ function LoginForm() {
         if (!credentials) {
             return alert('Missing credentials');
         }
-        return currentForm === 'login' ? loginMutation.mutate(credentials) : registerMutation.mutate(credentials);
+        return currentForm === 'login'
+            ? loginMutation.mutate(credentials)
+            : registerMutation.mutate(credentials);
     }
 
     return (
