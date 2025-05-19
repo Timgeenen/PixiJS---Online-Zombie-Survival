@@ -1,1 +1,1 @@
-export * as default from './userStore';
+export { default as useAuthStore } from './useAuthStore';
