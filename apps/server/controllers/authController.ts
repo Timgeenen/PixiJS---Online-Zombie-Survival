@@ -88,3 +88,9 @@ export async function guestLogin(req: Request, res: Response) {
 export async function authorizeUser(req: Request, res: Response) {
     sendSuccess(res, 201, 'User authorized');
 }
+
+export async function logout(req: Request, res: Response) {
+    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken');
+    sendSuccess(res, 201, 'User logged out');
+}
