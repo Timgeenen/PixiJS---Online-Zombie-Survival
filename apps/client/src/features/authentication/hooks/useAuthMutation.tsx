@@ -1,11 +1,11 @@
 import type { Credentials } from '@monorepo/shared';
+import { useAuthStore } from '@Store';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
-import userStore from 'src/store/userStore';
 import { login, register } from '../services/authServices';
 
 function useAuthMutation(type: 'login' | 'register' | 'guest') {
-    const { setUser } = userStore();
+    const setUser = useAuthStore((state) => state.setUser);
     const navigate = useNavigate();
 
     return useMutation({

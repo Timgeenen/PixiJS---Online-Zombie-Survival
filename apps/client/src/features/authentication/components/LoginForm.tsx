@@ -1,11 +1,11 @@
 import type { Credentials } from '@monorepo/shared';
 import { useRef, useState } from 'react';
-import { guestLogin, login, register } from '../services/authServices';
+import useAuthMutation from '../hooks/useAuthMutation';
+import { guestLogin } from '../services/authServices';
 import type { FormType, InputRefs } from '../types';
 import CredentialFields from './CredentialFields';
 import FormButtons from './FormButtons';
 import FormFooter from './FormFooter';
-import useAuthMutation from '../hooks/useAuthMutation';
 
 function LoginForm() {
     const [currentForm, setCurrentForm] = useState<FormType>('login');
@@ -39,7 +39,7 @@ function LoginForm() {
         return credentials;
     }
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const credentials = getCredentials();
         if (!credentials) {
