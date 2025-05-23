@@ -11,9 +11,9 @@ const cookieParser = require('cookie-parser');
 
 const corsOptions = {
     origin:
-    process.env.NODE_ENV === 'production'
-    ? process.env.CLIENT_URL
-    : process.env.CLIENT_LOCALHOST,
+        process.env.NODE_ENV === 'production'
+            ? process.env.CLIENT_URL
+            : process.env.CLIENT_LOCALHOST,
     credentials: true,
 };
 
@@ -32,7 +32,7 @@ connectDB();
 app.use(errorHandler);
 
 const socket = new SocketInstance(httpServer);
-socket.init()
+socket.init();
 
 //Handle uncaught errors
 process.on('uncaughtException', (err) => {

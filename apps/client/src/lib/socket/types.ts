@@ -5,7 +5,7 @@ export interface ListenerEvents {
 }
 
 export interface EmitEvents {
-    join_room: (event: string, roomId: string, callback: () => void) => void
+    join_room: (event: string, roomId: string, callback: () => void) => void;
 }
 
 export interface SocketInstance {
@@ -14,4 +14,3 @@ export interface SocketInstance {
     on: <K extends keyof ListenerEvents>(event: K, callback: ListenerEvents[K]) => void;
     emit: <K extends keyof EmitEvents>(event: K, ...args: Parameters<EmitEvents[K]>) => void;
 }
-

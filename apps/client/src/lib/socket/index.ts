@@ -11,7 +11,9 @@ export default class SocketIoInstance implements SocketInstance {
     constructor() {}
 
     async initialize() {
-        if (this.socket) { return console.error('Socket is already connected')};
+        if (this.socket) {
+            return console.error('Socket is already connected');
+        }
 
         this.socket = io(this.url);
         this.registerDefaultListeners();
@@ -20,7 +22,7 @@ export default class SocketIoInstance implements SocketInstance {
     disconnect() {
         this.socket?.disconnect();
     }
-    
+
     on<K extends keyof ListenerEvents>(event: K, callback: ListenerEvents[K]) {
         this.socket?.on(event as string, callback);
     }
