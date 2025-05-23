@@ -3,7 +3,7 @@ import { useAuthStore } from '@Store';
 import useLogoutMutation from '../hooks/useLogoutMutation';
 
 function MainMenuContainer() {
-    const removeUser = useAuthStore(state => state.removeUser);
+    const removeUser = useAuthStore((state) => state.removeUser);
     const logoutUserMutation = useLogoutMutation();
     function logout() {
         logoutUserMutation.mutate();
@@ -16,7 +16,9 @@ function MainMenuContainer() {
             <NavButton path="/myprofile">Profile</NavButton>
             <NavButton path="/leaderboards">Leaderboards</NavButton>
             <NavButton path="/settings">Settings</NavButton>
-            <NavButton onClick={logout} path="/">Logout</NavButton>
+            <NavButton onClick={logout} path="/">
+                Logout
+            </NavButton>
         </div>
     );
 }
