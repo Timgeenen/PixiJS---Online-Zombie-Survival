@@ -1,20 +1,17 @@
 import SocketIoInstance from '@Library/socket';
+import type { GetFn, SetFn, SocketState, SocketStore } from '@Types';
 import { create } from 'zustand';
-
-interface SocketStore {
-    socket: SocketIoInstance | null;
-    connectedToGeneralLobby: boolean;
-    currentLobbyId: string | null;
-    connectSocket: () => void;
-    disconnectSocket: () => void;
-    // joinroom: (id: string) => void;
-}
 
 const useSocketStore = create<SocketStore>((set, get) => ({
     socket: null,
     connectedToGeneralLobby: false,
     currentLobbyId: null,
-    connectSocket: async () => {
+    connectSocket: createConnectSocket(set, get),
+    disconnectSocket: createDisconnectSocket(set, get),
+}));
+
+function createConnectSocket(set: SetFn<SocketState>, get: GetFn<SocketStore>) {
+    return async () => {
         const socketIsConnected = !!get().socket;
         if (socketIsConnected) {
             return console.error('Could not connect to socket: already connected');
@@ -23,17 +20,19 @@ const useSocketStore = create<SocketStore>((set, get) => ({
         socket.initialize();
         socket.on('connect', () => {
             set(() => ({ socket: socket }));
-        })
-    },
-    disconnectSocket: () => {
+        });
+    };
+}
+
+function createDisconnectSocket(set: SetFn<SocketState>, get: GetFn<SocketStore>) {
+    return () => {
         const socket = get().socket;
         if (!socket) {
             return console.error('Could not disconnect socket: no socket connected');
         }
         socket.disconnect();
         set(() => ({ socket: null }));
-    },
-    // joinroom: (id) => {},
-}));
+    };
+}
 
 export default useSocketStore;
