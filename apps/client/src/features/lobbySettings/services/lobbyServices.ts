@@ -1,7 +1,6 @@
 import { HTTPClient } from '@API';
-import type { GameSettings } from '@monorepo/shared';
+import type { ApiResponse, Lobby, LobbySettings } from '@monorepo/shared';
 
-export async function createNewLobby(settings: GameSettings) {
-    const promise = await HTTPClient.post('/api/lobby/create', settings);
-    return promise;
+export async function createNewLobby(settings: LobbySettings): Promise<ApiResponse<Lobby>> {
+    return await HTTPClient.post('/api/lobby/create', settings);
 }

@@ -2,7 +2,7 @@ import { LabeledInput } from '@Components';
 import {
     GAME_MODES,
     MAX_PLAYER_LIMIT,
-    type GameDifficulty,
+    type GameDifficulties,
     type GameModes,
 } from '@monorepo/shared';
 import type { Dispatch, SetStateAction } from 'react';
@@ -11,7 +11,7 @@ import TwoWaySwitch from 'src/components/ui/TwoWaySwitch';
 import ValueSwitcher from 'src/components/ui/ValueSwitcher';
 
 interface Props {
-    difficulty: GameDifficulty;
+    difficulty: GameDifficulties;
     difficultyUp: (e: React.MouseEvent<HTMLButtonElement>) => void;
     difficultyDown: (e: React.MouseEvent<HTMLButtonElement>) => void;
     gameMode: GameModes;

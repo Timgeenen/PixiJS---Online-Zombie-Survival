@@ -1,24 +1,15 @@
 import { Button, NavButton } from '@Components';
-import {
-    GAME_MODES,
-    MAX_PLAYER_LIMIT,
-    type GameDifficulty,
-    type GameModes,
-    type GameSettings,
-} from '@monorepo/shared';
+import { GAME_MODES, type GameDifficulties, type GameModes } from '@monorepo/shared';
 import { GAME_DIFFICULTIES } from '@monorepo/shared/constants';
+import { lobbySettingsSchema } from '@monorepo/shared/schemas';
 import { useState } from 'react';
-import SettingFields from './SettingFields';
 import { createNewLobby } from '../services/lobbyServices';
-
-const maxLobbyNameLength = 80;
-const minLobbyNameLength = 1;
-const maxPasswordLength = 20;
-const minPasswordLength = 4;
+import SettingFields from './SettingFields';
+import useCreateLobbyMutation from '../hooks/useCreateLobbyMutation';
 
 function LobbySettingsContainer() {
     const [difficultyIndex, setDifficultyIndex] = useState<number>(0);
-    const [difficulty, setDifficulty] = useState<GameDifficulty>(
+    const [difficulty, setDifficulty] = useState<GameDifficulties>(
         GAME_DIFFICULTIES[difficultyIndex]!,
     );
     const [gameMode, setGameMode] = useState<GameModes>(GAME_MODES[0]!);
@@ -26,51 +17,26 @@ function LobbySettingsContainer() {
     const [maxPlayers, setMaxPlayers] = useState<number>(4);
     const [isPrivate, setIsPrivate] = useState<boolean>(false);
     const [password, setPassword] = useState<string>('');
+    const createLobbyMutation = useCreateLobbyMutation();
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if (!GAME_MODES.includes(gameMode)) {
-            return alert('Invalid game mode');
-        }
-        if (!GAME_DIFFICULTIES.includes(difficulty)) {
-            return alert('Invalid difficulty setting');
-        }
-        if (gameMode === 'solo') {
-            const settings: GameSettings = {
-                gameMode,
-                difficulty,
-            };
-            return createNewLobby(settings);
-        }
+        const settings =
+            gameMode === 'solo'
+                ? {
+                      gameMode,
+                      difficulty,
+                  }
+                : {
+                      gameMode,
+                      difficulty,
+                      lobbyName,
+                      maxPlayers,
+                      isPrivate,
+                      password,
+                  };
 
-        if (gameMode === 'multiplayer') {
-            if (lobbyName.length > maxLobbyNameLength || lobbyName.length < minLobbyNameLength) {
-                return alert(
-                    `Lobby name has to be between ${minLobbyNameLength} and ${maxLobbyNameLength} characters long`,
-                );
-            }
-            if (maxPlayers > MAX_PLAYER_LIMIT || maxPlayers < 2) {
-                return alert(`Max players has to be between 2 and ${MAX_PLAYER_LIMIT}`);
-            }
-
-            const settings: GameSettings = {
-                gameMode,
-                difficulty,
-                lobbyName,
-                maxPlayers,
-                isPrivate,
-            };
-
-            if (isPrivate) {
-                if (password.length > maxPasswordLength || password.length < minPasswordLength) {
-                    return alert(
-                        `Password has to be between ${minPasswordLength} and ${maxPasswordLength} characters long`,
-                    );
-                }
-                settings.password = password;
-            }
-            return createNewLobby(settings);
-        }
+        createLobbyMutation.mutate(settings);
     }
 
     function changeDifficulty(e: React.MouseEvent<HTMLButtonElement>, type: 'up' | 'down') {
