@@ -1,5 +1,5 @@
 import { LabeledInput } from '@Components';
-import type { FormType, InputRefs } from '../types';
+import type { FormType } from '../types';
 
 type Props = {
     currentForm: FormType;
@@ -9,7 +9,6 @@ type Props = {
     setUsername: (val: string) => void;
     setEmail: (val: string) => void;
     setPassword: (val: string) => void;
-    inputRefs: React.RefObject<InputRefs>;
 };
 
 function CredentialFields({
@@ -20,14 +19,10 @@ function CredentialFields({
     setUsername,
     setEmail,
     setPassword,
-    inputRefs,
 }: Props) {
     return (
         <>
             <LabeledInput
-                ref={(el) => {
-                    inputRefs.current['username'] = el;
-                }}
                 htmlFor="Username"
                 type="text"
                 placeholder="e.g. user2025"
@@ -38,9 +33,6 @@ function CredentialFields({
             />
             {currentForm === 'register' && (
                 <LabeledInput
-                    ref={(el) => {
-                        inputRefs.current['email'] = el;
-                    }}
                     htmlFor="Email"
                     type="email"
                     placeholder="e.g. user@email.com"
@@ -49,9 +41,6 @@ function CredentialFields({
                 />
             )}
             <LabeledInput
-                ref={(el) => {
-                    inputRefs.current['password'] = el;
-                }}
                 htmlFor="Password"
                 type="password"
                 minLength={8}

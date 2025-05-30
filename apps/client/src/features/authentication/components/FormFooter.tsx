@@ -14,7 +14,7 @@ function FormFooter({
 }: ComponentPropsWithRef<'a'> & FormFooterProps) {
     return (
         <p>
-            {currentForm === 'login' ? 'Already registered? ' : 'New user? '}
+            {currentForm === 'register' ? 'Already registered? ' : 'New user? '}
             <a
                 {...props}
                 className={clsx('text-blue-400 hover:cursor-pointer')}

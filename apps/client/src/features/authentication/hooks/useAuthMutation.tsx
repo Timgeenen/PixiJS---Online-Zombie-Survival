@@ -1,4 +1,9 @@
-import type { Credentials } from '@monorepo/shared';
+import {
+    loginCredentialsSchema,
+    registerCredentialsSchema,
+    type LoginCredentials,
+    type RegisterCredentials,
+} from '@monorepo/shared';
 import { useAuthStore } from '@Store';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
@@ -9,15 +14,24 @@ function useAuthMutation(type: 'login' | 'register' | 'guest') {
     const navigate = useNavigate();
 
     return useMutation({
-        mutationFn: async (credentials?: Credentials) => {
+        mutationFn: async (credentials?: LoginCredentials | RegisterCredentials) => {
             if (!credentials) {
                 throw new Error('Missing credentials');
             }
             if (type === 'login') {
-                return await login(credentials);
+                const result = loginCredentialsSchema.safeParse(credentials);
+                if (result.error) {
+                    console.error(result.error);
+                    return alert('Invalid login credentials');
+                }
+                return await login(result.data);
             }
             if (type === 'register') {
-                return await register(credentials);
+                const result = registerCredentialsSchema.safeParse(credentials);
+                if (result.error) {
+                    throw new Error('Invalid register credentials');
+                }
+                return await register(result.data);
             }
         },
         onSuccess(data) {

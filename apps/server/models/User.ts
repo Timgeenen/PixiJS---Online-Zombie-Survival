@@ -1,6 +1,100 @@
+import type { GameSettings, Keybindings, PlayerSettings, PlayerStats } from '@monorepo/shared';
+import type { DBUserInput } from '@Types/db';
 import mongoose from 'mongoose';
 
-const UserSchema = new mongoose.Schema({
+export const UserStatsSchema = new mongoose.Schema<PlayerStats>(
+    {
+        level: {
+            type: Number,
+            required: true,
+            default: 1,
+        },
+        experience: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+    },
+    { _id: false },
+);
+
+const GameSettingsSchema = new mongoose.Schema<GameSettings>(
+    {
+        shootOnAim: {
+            type: Boolean,
+            required: true,
+            default: true,
+        },
+    },
+    { _id: false },
+);
+
+const KeybindingsSchema = new mongoose.Schema<Keybindings>(
+    {
+        up: {
+            type: String,
+            required: true,
+            default: 'W',
+        },
+        down: {
+            type: String,
+            required: true,
+            default: 'S',
+        },
+        left: {
+            type: String,
+            required: true,
+            default: 'A',
+        },
+        right: {
+            type: String,
+            required: true,
+            default: 'D',
+        },
+        aimUp: {
+            type: String,
+            required: true,
+            default: 'ArrowUp',
+        },
+        aimDown: {
+            type: String,
+            required: true,
+            default: 'ArrowDown',
+        },
+        aimLeft: {
+            type: String,
+            required: true,
+            default: 'ArrowLeft',
+        },
+        aimRight: {
+            type: String,
+            required: true,
+            default: 'Arrowright',
+        },
+        shoot: {
+            type: String,
+            required: true,
+            default: ' ',
+        },
+    },
+    { _id: false },
+);
+
+const UserSettingsSchema = new mongoose.Schema<PlayerSettings>(
+    {
+        gameSettings: {
+            type: GameSettingsSchema,
+            default: () => ({}),
+        },
+        keybindings: {
+            type: KeybindingsSchema,
+            default: () => ({}),
+        },
+    },
+    { _id: false },
+);
+
+const UserSchema = new mongoose.Schema<DBUserInput>({
     username: {
         type: String,
         required: true,
@@ -12,6 +106,14 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    stats: {
+        type: UserStatsSchema,
+        default: () => ({}),
+    },
+    settings: {
+        type: UserSettingsSchema,
+        default: () => ({}),
     },
 });
 

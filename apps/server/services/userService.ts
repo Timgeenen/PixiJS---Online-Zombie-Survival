@@ -1,5 +1,5 @@
 import User from '@Models/User';
-import type { Credentials } from '@monorepo/shared';
+import type { RegisterCredentials } from '@monorepo/shared';
 
 export async function isUsernameTaken(username: string) {
     const user = await User.findOne({ username });
@@ -11,7 +11,7 @@ export async function isEmailTaken(email: string) {
     return !!user;
 }
 
-export async function createNewUser(credentials: Credentials) {
+export async function createNewUser(credentials: RegisterCredentials) {
     return await User.create(credentials);
 }
 
