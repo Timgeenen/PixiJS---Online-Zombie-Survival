@@ -21,6 +21,7 @@
     "react-router-dom": "^7.5.3",
     "socket.io-client": "^4.8.1",
     "tailwindcss": "3.4.17",
+    "zod": "^3.25.31",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

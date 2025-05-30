@@ -1,22 +1,12 @@
-export type GameDifficulty = 'easy' | 'normal' | 'hard';
+import { z } from 'zod';
+import type {
+    baseLobbyBaseSchema,
+    gameDifficultiesSchema,
+    gameModesSchema,
+    lobbySettingsSchema,
+} from '../schemas';
 
-export type GameModes = 'solo' | 'multiplayer';
-
-interface BaseGameSettings {
-    gameMode: GameModes;
-    difficulty: GameDifficulty;
-}
-
-interface SoloLobbySettings extends BaseGameSettings {
-    gameMode: 'solo';
-}
-
-interface MultiLobbySettings extends BaseGameSettings {
-    gameMode: 'multiplayer';
-    lobbyName: string;
-    maxPlayers: number;
-    isPrivate: boolean;
-    password?: string;
-}
-
-export type GameSettings = SoloLobbySettings | MultiLobbySettings;
+export type GameDifficulties = z.infer<typeof gameDifficultiesSchema>;
+export type GameModes = z.infer<typeof gameModesSchema>;
+export type LobbySettings = z.infer<typeof lobbySettingsSchema>;
+export type Lobby = z.infer<typeof baseLobbyBaseSchema>;
