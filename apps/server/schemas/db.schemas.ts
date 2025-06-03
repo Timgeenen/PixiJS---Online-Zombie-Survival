@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const metaDataSchema = z.object({
     _id: z.string(),
-    createdAt: z.date(),
+    createdAt: z.date().optional(),
     updatedAt: z.date().optional(),
 });
 
@@ -22,4 +22,4 @@ export const DBLobbyInputSchema = baseLobbyBaseSchema.superRefine((data, ctx) =>
 });
 
 export const DBUserInputSchema = myProfileSchema.extend(registerCredentialsSchema.shape);
-export const DBUserOutputSchema = myProfileSchema.extend(metaDataSchema.shape);
+export const DBUserOutputSchema = DBUserInputSchema.extend(metaDataSchema.shape);

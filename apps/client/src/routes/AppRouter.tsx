@@ -20,7 +20,7 @@ function AppRouter() {
             <Route element={<ProtectedRoute />}>
                 <Route path="/game" element={<Game />} />
                 <Route path="/leaderboards" element={<Leaderboards />} />
-                <Route path="/lobby/:id" element={<Lobby />} />
+                <Route path="/lobby/:lobbyId" element={<Lobby />} />
                 <Route path="/lobbylist" element={<LobbyList />} />
                 <Route path="/lobbysettings" element={<LobbySettings />} />
                 <Route path="/main" element={<MainMenu />} />

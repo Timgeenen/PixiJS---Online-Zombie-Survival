@@ -7,5 +7,6 @@ const router = Router();
 router.use(authMiddleware);
 
 router.post('/create', createLobby);
+// router.get('/:lobbyID', getLobbyById);
 
 export default router;

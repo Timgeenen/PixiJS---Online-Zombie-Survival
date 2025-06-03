@@ -24,6 +24,7 @@ export const profileStats = z.object({
 
 export const publicProfileSchema = z.object({
     _id: z.string(),
+    username: z.string().max(MAX_USERNAME_LENGTH).min(MIN_USERNAME_LENGTH),
     stats: profileStats,
 });
 

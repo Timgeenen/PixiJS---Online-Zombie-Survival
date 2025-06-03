@@ -15,7 +15,9 @@ export default class SocketIoInstance implements SocketInstance {
             return console.error('Socket is already connected');
         }
 
-        this.socket = io(this.url);
+        this.socket = io(this.url, {
+            withCredentials: true,
+        });
         this.registerDefaultListeners();
     }
 
@@ -29,6 +31,10 @@ export default class SocketIoInstance implements SocketInstance {
 
     emit<K extends keyof EmitEvents>(event: K, ...args: Parameters<EmitEvents[K]>) {
         this.socket?.emit(event, ...args);
+    }
+
+    get connected(): boolean {
+        return this.socket?.connected ?? false;
     }
 
     private registerDefaultListeners() {

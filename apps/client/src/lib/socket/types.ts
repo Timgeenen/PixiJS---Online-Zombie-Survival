@@ -1,3 +1,9 @@
+import type {
+    SocketJoinLobbyData,
+    SocketJoinLobbyResponse,
+    SocketLeaveLobbyData,
+} from '@monorepo/shared';
+
 export interface ListenerEvents {
     connect: () => void;
     disconnect: () => void;
@@ -5,7 +11,14 @@ export interface ListenerEvents {
 }
 
 export interface EmitEvents {
-    join_room: (event: string, roomId: string, callback: () => void) => void;
+    join_lobby: (
+        data: SocketJoinLobbyData,
+        callback: (response: SocketJoinLobbyResponse) => void,
+    ) => void;
+    leave_lobby: (
+        data: SocketLeaveLobbyData,
+        callback: (response: SocketJoinLobbyResponse) => void,
+    ) => void;
 }
 
 export interface SocketInstance {

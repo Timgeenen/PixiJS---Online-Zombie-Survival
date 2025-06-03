@@ -50,7 +50,7 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function register(req: Request, res: Response) {
-    logger.info('New user is being registered')
+    logger.info('New user is being registered');
     const credentials = req.body;
     const result = registerCredentialsSchema.safeParse(credentials);
     if (result.error) {

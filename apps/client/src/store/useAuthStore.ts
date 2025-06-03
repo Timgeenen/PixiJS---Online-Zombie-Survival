@@ -1,8 +1,9 @@
-import type { AuthState, AuthStore, SetFn, User } from '@Types';
+import type { MyProfile } from '@monorepo/shared';
+import type { AuthState, AuthStore, SetFn } from '@Types';
 import { create } from 'zustand';
 
 const userString = localStorage.getItem('user');
-const user: User | null = userString ? JSON.parse(userString) : null;
+const user: MyProfile | null = userString ? JSON.parse(userString) : null;
 
 const useAuthStore = create<AuthStore>((set) => ({
     user: user,
@@ -12,7 +13,7 @@ const useAuthStore = create<AuthStore>((set) => ({
 }));
 
 function createSetUser(set: SetFn<AuthState>) {
-    return (user: User) => {
+    return (user: MyProfile) => {
         localStorage.setItem('user', JSON.stringify(user));
         set((state) => ({ ...state, user }));
     };
