@@ -7,6 +7,11 @@ export const socketJoinLobbyDataSchema = socketLeaveLobbyDataSchema.extend({
     password: z.string().trim().optional(),
 });
 
+export const baseResponse = z.object({
+    success: z.boolean(),
+    message: z.string().trim(),
+});
+
 const successResponse = <T extends ZodTypeAny>(dataSchema: T) => {
     return z.object({
         success: z.literal(true),
@@ -15,7 +20,7 @@ const successResponse = <T extends ZodTypeAny>(dataSchema: T) => {
     });
 };
 
-const errorResponse = z.object({
+export const errorResponse = z.object({
     success: z.literal(false),
     message: z.string().trim(),
 });

@@ -10,7 +10,7 @@ import {
     ConflictError,
     InternalServerError,
     NotFoundError,
-} from 'errors/customErrors';
+} from 'errors/customAppErrors';
 import type { Request, Response } from 'express';
 import {
     createNewUser,

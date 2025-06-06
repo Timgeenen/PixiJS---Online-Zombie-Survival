@@ -4,7 +4,7 @@ import type { DBLobbyInput } from '@Types/db';
 import { sendSuccess } from '@Utils/apiResponse';
 import { hashPassword } from '@Utils/hash';
 import logger from '@Utils/logger';
-import { AuthError, BadRequestError } from 'errors/customErrors';
+import { AuthError, BadRequestError } from 'errors/customAppErrors';
 import type { Response } from 'express';
 import { DBLobbyInputSchema } from 'schemas/db.schemas';
 import { createNewLobby } from 'services/lobbyService';

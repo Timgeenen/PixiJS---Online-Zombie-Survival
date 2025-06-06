@@ -1,5 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import type { EmitEvents, ListenerEvents, SocketInstance } from './types';
+import { authorizeUser } from '@Services';
+import type { SocketResponseBase } from '@monorepo/shared';
 
 export default class SocketIoInstance implements SocketInstance {
     private socket: Socket | null = null;
@@ -17,8 +19,10 @@ export default class SocketIoInstance implements SocketInstance {
 
         this.socket = io(this.url, {
             withCredentials: true,
+            autoConnect: false,
         });
         this.registerDefaultListeners();
+        this.socket.connect();
     }
 
     disconnect() {
@@ -48,8 +52,16 @@ export default class SocketIoInstance implements SocketInstance {
         this.socket.on('disconnect', () => {
             console.log('socket disconnected');
         });
-        this.socket.on('connect_error', (err) => {
-            console.error('Socket error', err);
+        this.socket.on('connect_error', async (err) => {
+            if (err.message === 'TOKEN_EXPIRED') {
+                const refresh = await authorizeUser();
+                if (!refresh.success) {
+                    return console.error('Could not refresh token');
+                }
+                if (this.socket?.disconnected) {
+                    this.socket?.connect();
+                }
+            }
         });
     }
 }

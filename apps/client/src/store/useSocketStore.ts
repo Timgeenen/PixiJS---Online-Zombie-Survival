@@ -50,7 +50,7 @@ function createJoinLobby(set: SetFn<SocketState>, get: GetFn<SocketStore>) {
                 console.error(response.message);
                 return alert(response.message);
             }
-            set((state) => ({ ...state, currentLobby: response.data ?? null }));
+            set((state) => ({ ...state, currentLobby: response.data }));
         });
     };
 }
@@ -61,13 +61,8 @@ function createLeaveLobby(set: SetFn<SocketState>, get: GetFn<SocketStore>) {
         if (!socket) {
             return console.error('Could not leave lobby: no socket connected');
         }
-        socket.emit('leave_lobby', { lobbyId }, (response) => {
-            if (!response.success) {
-                console.error(response.message);
-                return alert(response.message);
-            }
-            set((state) => ({ ...state, currentLobby: null }));
-        });
+        socket.emit('leave_lobby', { lobbyId });
+        set((state) => ({ ...state, currentLobby: null }));
     };
 }
 

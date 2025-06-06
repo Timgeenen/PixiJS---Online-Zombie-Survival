@@ -1,4 +1,4 @@
-import { InternalServerError } from 'errors/customErrors';
+import { InternalServerError } from 'errors/customAppErrors';
 import type { Response } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 

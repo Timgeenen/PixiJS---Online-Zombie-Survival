@@ -15,10 +15,7 @@ export interface EmitEvents {
         data: SocketJoinLobbyData,
         callback: (response: SocketJoinLobbyResponse) => void,
     ) => void;
-    leave_lobby: (
-        data: SocketLeaveLobbyData,
-        callback: (response: SocketJoinLobbyResponse) => void,
-    ) => void;
+    leave_lobby: (data: SocketLeaveLobbyData) => void;
 }
 
 export interface SocketInstance {

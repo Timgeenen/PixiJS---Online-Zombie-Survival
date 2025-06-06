@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { InternalServerError } from 'errors/customErrors';
+import { InternalServerError } from 'errors/customAppErrors';
 
 export async function hashPassword(password: string) {
     try {

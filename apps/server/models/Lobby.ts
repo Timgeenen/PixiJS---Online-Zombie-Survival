@@ -44,14 +44,12 @@ const ConnectedPlayersSchema = new mongoose.Schema<PublicProfile>({
     _id: {
         type: String,
         required: true,
-        unique: true,
         ref: 'User',
     },
     username: {
         type: String,
         required: true,
         ref: 'User',
-        unique: true,
     },
     stats: {
         type: UserStatsSchema,

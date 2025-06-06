@@ -1,7 +1,7 @@
 import type { ApiResponse } from '@monorepo/shared';
 import logger from '@Utils/logger';
-import { AppError } from 'errors/customErrors';
-import type { Response, Request, NextFunction } from 'express';
+import { AppError } from 'errors/customAppErrors';
+import type { NextFunction, Request, Response } from 'express';
 
 export function errorHandler<T>(
     err: any,

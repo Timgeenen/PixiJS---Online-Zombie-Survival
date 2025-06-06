@@ -35,6 +35,7 @@ function LobbyContainer() {
     return (
         <div className="flex flex-col gap-2">
             <ul>{...Players}</ul>
+            <button onClick={() => lobbyId && leaveLobby(lobbyId)}>LEAVE LOBBY</button>
             <NavButton path="/game">Start Game</NavButton>
             <NavButton path="/lobbylist">Leave Lobby</NavButton>
         </div>
