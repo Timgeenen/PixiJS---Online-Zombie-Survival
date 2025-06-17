@@ -1,6 +1,7 @@
 import { loginCredentialsSchema, registerCredentialsSchema } from '@monorepo/shared';
 import type { AuthenticatedRequest } from '@Types/api';
 import { sendSuccess } from '@Utils/apiResponse';
+import { docToObject } from '@Utils/dbHelpers';
 import { comparePassword, hashPassword } from '@Utils/hash';
 import { setNewToken } from '@Utils/jwt';
 import logger from '@Utils/logger';
@@ -34,16 +35,13 @@ export async function login(req: Request, res: Response) {
     if (!user) {
         throw new NotFoundError('User not found');
     }
-
     const match = await comparePassword(password, user.password);
 
     if (!match) {
         throw new AuthError('Invalid password');
     }
-
-    const userID = user._id.toString();
-    setNewToken(res, userID, 'refresh');
-    setNewToken(res, userID, 'access');
+    setNewToken(res, user._id, 'refresh');
+    setNewToken(res, user._id, 'access');
 
     logger.info('Login successful');
     sendSuccess(res, 201, 'Log in success', user);
@@ -78,6 +76,9 @@ export async function register(req: Request, res: Response) {
         email,
         password: hashedPassword,
     });
+    if (!user) {
+        throw new InternalServerError('Could not create new user: internal server error');
+    }
 
     logger.info(`New user has been created: [username: ${user.username}; _id: ${user._id}]`);
     sendSuccess(res, 201, 'Successfuly created user', user);

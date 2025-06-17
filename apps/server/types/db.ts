@@ -1,12 +1,14 @@
-import type {
-    DBLobbyInputSchema,
-    DBLobbyOutputSchema,
-    DBUserInputSchema,
-    DBUserOutputSchema,
-} from 'schemas/db.schemas';
+import type mongoose from 'mongoose';
+import type { Date, Document, ObjectId } from 'mongoose';
+import type { DBLobbyInputSchema, DBUserInputSchema } from 'schemas/db.schemas';
 import { z } from 'zod';
 
+export interface DBMetaData {
+    _id: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
 export type DBLobbyInput = z.infer<typeof DBLobbyInputSchema>;
-export type DBLobbyOutput = z.infer<typeof DBLobbyOutputSchema>;
+export type DBLobby = DBLobbyInput & DBMetaData;
 export type DBUserInput = z.infer<typeof DBUserInputSchema>;
-export type DBUserOutput = z.infer<typeof DBUserOutputSchema>;
+export type DBUser = DBUserInput & DBMetaData;

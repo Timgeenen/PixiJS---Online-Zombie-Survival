@@ -1,12 +1,6 @@
-import {
-    GAME_DIFFICULTIES,
-    GAME_MODES,
-    type LobbySettings,
-    type PublicProfile,
-} from '@monorepo/shared';
+import { GAME_DIFFICULTIES, GAME_MODES, type LobbySettings } from '@monorepo/shared';
 import type { DBLobbyInput } from '@Types/db';
 import mongoose from 'mongoose';
-import { UserStatsSchema } from './User';
 
 const LobbySettingsSchema = new mongoose.Schema<LobbySettings>(
     {
@@ -40,51 +34,16 @@ const LobbySettingsSchema = new mongoose.Schema<LobbySettings>(
     { _id: false },
 );
 
-const ConnectedPlayersSchema = new mongoose.Schema<PublicProfile>({
-    _id: {
-        type: String,
-        required: true,
-        ref: 'User',
-    },
-    username: {
-        type: String,
-        required: true,
-        ref: 'User',
-    },
-    stats: {
-        type: UserStatsSchema,
-        default: () => ({}),
-    },
-});
-
 const LobbySchema = new mongoose.Schema<DBLobbyInput>({
-    leader: {
-        type: String,
-        required: true,
-    },
-    inGame: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
-    blackList: [
-        {
-            type: String,
-            required: false,
-            default: [],
-            ref: 'User',
-        },
-    ],
     settings: {
         type: LobbySettingsSchema,
         default: () => ({}),
     },
-    players: [ConnectedPlayersSchema],
 });
 
 LobbySchema.set('toJSON', {
-    transform: (doc, ret) => {
-        delete ret.password;
+    transform: (_, ret) => {
+        delete ret.settings.password;
         return ret;
     },
 });

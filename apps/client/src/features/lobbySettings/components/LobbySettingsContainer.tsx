@@ -1,13 +1,19 @@
 import { Button, NavButton } from '@Components';
-import { GAME_MODES, type GameDifficulties, type GameModes } from '@monorepo/shared';
+import {
+    GAME_MODES,
+    type GameDifficulties,
+    type GameModes,
+    type LobbySettings,
+} from '@monorepo/shared';
 import { GAME_DIFFICULTIES } from '@monorepo/shared/constants';
-import { lobbySettingsSchema } from '@monorepo/shared/schemas';
-import { useState } from 'react';
-import { createNewLobby } from '../services/lobbyServices';
-import SettingFields from './SettingFields';
+import { useEffect, useState } from 'react';
 import useCreateLobbyMutation from '../hooks/useCreateLobbyMutation';
+import SettingFields from './SettingFields';
+import useSocketStore from 'src/store/useSocketStore';
+import { useNavigate } from 'react-router';
 
 function LobbySettingsContainer() {
+    const navigate = useNavigate();
     const [difficultyIndex, setDifficultyIndex] = useState<number>(0);
     const [difficulty, setDifficulty] = useState<GameDifficulties>(
         GAME_DIFFICULTIES[difficultyIndex]!,
@@ -17,11 +23,11 @@ function LobbySettingsContainer() {
     const [maxPlayers, setMaxPlayers] = useState<number>(4);
     const [isPrivate, setIsPrivate] = useState<boolean>(false);
     const [password, setPassword] = useState<string>('');
-    const createLobbyMutation = useCreateLobbyMutation();
+    const { createNewLobby, currentLobby } = useSocketStore();
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        const settings =
+        const settings: LobbySettings =
             gameMode === 'solo'
                 ? {
                       gameMode,
@@ -35,8 +41,7 @@ function LobbySettingsContainer() {
                       isPrivate,
                       password,
                   };
-
-        createLobbyMutation.mutate(settings);
+        createNewLobby(settings);
     }
 
     function changeDifficulty(e: React.MouseEvent<HTMLButtonElement>, type: 'up' | 'down') {
@@ -58,6 +63,12 @@ function LobbySettingsContainer() {
             setDifficultyIndex(prevIndex);
         }
     }
+
+    useEffect(() => {
+        if (currentLobby) {
+            navigate(`/lobby/${currentLobby._id}`);
+        }
+    }, [currentLobby]);
 
     return (
         <div>

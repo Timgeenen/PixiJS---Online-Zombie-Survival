@@ -118,8 +118,15 @@ const UserSchema = new mongoose.Schema<DBUserInput>({
 });
 
 UserSchema.set('toJSON', {
-    transform: (doc, ret) => {
+    transform: (_, ret) => {
         delete ret.password;
+        return ret;
+    },
+});
+
+UserSchema.set('toObject', {
+    transform: (_, ret) => {
+        ret._id = ret._id.toString();
         return ret;
     },
 });

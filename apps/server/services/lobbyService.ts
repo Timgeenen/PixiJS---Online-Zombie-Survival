@@ -1,35 +1,18 @@
 import Lobby from '@Models/Lobby';
-import type { PublicProfile } from '@monorepo/shared';
-import type { DBLobbyInput, DBLobbyOutput } from '@Types/db';
+import type { DBLobbyInput, DBLobby } from '@Types/db';
+import { docToObject } from '@Utils/dbHelpers';
 
-export async function createNewLobby(settings: DBLobbyInput): Promise<DBLobbyOutput> {
-    return await Lobby.create(settings);
+export async function createNewLobby(data: DBLobbyInput): Promise<DBLobby | null> {
+    const lobbyDoc = await Lobby.create(data);
+    return lobbyDoc ? docToObject(lobbyDoc) : null;
 }
 
-export async function findLobbyById(id: string): Promise<DBLobbyOutput | null> {
-    return await Lobby.findById(id);
+export async function findLobbyById(id: string): Promise<DBLobby | null> {
+    const lobbyDoc = await Lobby.findById(id);
+    return lobbyDoc ? docToObject(lobbyDoc) : null;
 }
 
-export async function joinLobbyById(
-    lobbyId: string,
-    playerData: PublicProfile,
-): Promise<DBLobbyOutput | null> {
-    return await Lobby.findByIdAndUpdate(lobbyId, { $addToSet: { players: playerData } });
-}
-
-export async function leaveLobbyById(
-    lobbyId: string,
-    playerId: string,
-): Promise<DBLobbyOutput | null> {
-    return await Lobby.findByIdAndUpdate(
-        lobbyId,
-        {
-            $pull: { players: { _id: playerId } },
-        },
-        { new: true },
-    );
-}
-
-export async function removeLobbyById(lobbyId: string): Promise<DBLobbyOutput | null> {
-    return await Lobby.findByIdAndDelete(lobbyId);
+export async function removeLobbyById(lobbyId: string): Promise<DBLobby | null> {
+    const lobbyDoc = await Lobby.findByIdAndDelete(lobbyId);
+    return lobbyDoc ? docToObject(lobbyDoc) : null;
 }

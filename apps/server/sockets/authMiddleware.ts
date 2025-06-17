@@ -1,8 +1,7 @@
-import type { SocketResponseBase } from '@monorepo/shared';
 import { verifyToken } from '@Utils/jwt';
 import logger from '@Utils/logger';
 import { parse } from 'cookie';
-import { SocketAuthError, SocketError } from 'errors/customSocketErrors';
+import { SocketAuthError } from 'errors/customSocketErrors';
 import type { Socket } from 'socket.io';
 
 export function authMiddleware(socket: Socket, next: (err?: Error) => void) {
@@ -34,20 +33,4 @@ export function authMiddleware(socket: Socket, next: (err?: Error) => void) {
     }
 
     return next(new SocketAuthError('TOKEN_EXPIRED'));
-
-    // logger.info('Sending request to client for new refresh token');
-    // socket.to(data.user_id).emit('refresh_token');
-    // const timeout = setTimeout(() => {
-    //     throw new SocketAuthError('New refresh token request failed: timeout expired');
-    // }, 5000);
-
-    // socket.once('token_refreshed', (response: SocketResponseBase) => {
-    //     clearTimeout(timeout);
-    //     logger.info('Response received from client');
-    //     if (response.success) {
-    //         logger.info('Get new refresh token success: recalling socket authMiddleware');
-    //         return authMiddleware(socket, next);
-    //     }
-    //     throw new SocketAuthError('Get new refresh token failed');
-    // })
 }

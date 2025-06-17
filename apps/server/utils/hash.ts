@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { InternalServerError } from 'errors/customAppErrors';
 
-export async function hashPassword(password: string) {
+export async function hashPassword(password: string): Promise<string> {
     try {
         const salt = await bcrypt.genSalt(4);
         return await bcrypt.hash(password, salt);
@@ -10,7 +10,7 @@ export async function hashPassword(password: string) {
     }
 }
 
-export async function comparePassword(password: string, hash: string) {
+export async function comparePassword(password: string, hash: string): Promise<boolean> {
     try {
         return await bcrypt.compare(password, hash);
     } catch (error) {

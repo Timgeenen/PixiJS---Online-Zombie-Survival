@@ -1,21 +1,43 @@
 import type {
-    SocketJoinLobbyData,
-    SocketJoinLobbyResponse,
-    SocketLeaveLobbyData,
+    JoinLobbyData,
+    LobbySettings,
+    PublicLobbyProfile,
+    ResponseLobbyData,
+    SocketResponse,
+    // SocketJoinLobbyData,
+    // SocketJoinLobbyResponse,
+    // SocketLeaveLobbyData,
+    // SocketResponseBase,
 } from '@monorepo/shared';
 
-export interface ListenerEvents {
+export type SocketEvents<T> = {
+    [K in keyof T]: T[K];
+};
+export type ListenerEvents = StandardListenerEvents & LobbyListenerEvents;
+
+export interface StandardListenerEvents {
     connect: () => void;
     disconnect: () => void;
     connect_error: (error: Error) => void;
 }
 
+export interface LobbyListenerEvents {
+    set_player_ready: (playerId: string) => void;
+    add_new_player: (player: PublicLobbyProfile) => void;
+    remove_player: (playerId: string) => void;
+}
+
 export interface EmitEvents {
-    join_lobby: (
-        data: SocketJoinLobbyData,
-        callback: (response: SocketJoinLobbyResponse) => void,
+    create_new_lobby: (
+        settings: LobbySettings,
+        callback: (response: SocketResponse<ResponseLobbyData>) => void,
     ) => void;
-    leave_lobby: (data: SocketLeaveLobbyData) => void;
+    join_lobby: (
+        data: JoinLobbyData,
+        callback: (response: SocketResponse<ResponseLobbyData>) => void,
+    ) => void;
+    leave_lobby: () => void;
+    player_ready: (callback: (response: SocketResponse<void>) => void) => void;
 }
 
 export interface SocketInstance {

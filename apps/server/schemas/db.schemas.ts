@@ -1,25 +1,6 @@
 import { baseLobbyBaseSchema, myProfileSchema, registerCredentialsSchema } from '@monorepo/shared';
-import { z } from 'zod';
 
-export const metaDataSchema = z.object({
-    _id: z.string(),
-    createdAt: z.date().optional(),
-    updatedAt: z.date().optional(),
-});
-
-export const DBLobbyOutputSchema = baseLobbyBaseSchema.extend(metaDataSchema.shape);
-export const DBLobbyInputSchema = baseLobbyBaseSchema.superRefine((data, ctx) => {
-    if (
-        data.settings.gameMode === 'multiplayer' &&
-        data.players.length > data.settings.maxPlayers
-    ) {
-        ctx.addIssue({
-            path: ['players'],
-            code: z.ZodIssueCode.custom,
-            message: `Too many players. Max ${data.settings.maxPlayers}`,
-        });
-    }
-});
-
-export const DBUserInputSchema = myProfileSchema.extend(registerCredentialsSchema.shape);
-export const DBUserOutputSchema = DBUserInputSchema.extend(metaDataSchema.shape);
+export const DBLobbyInputSchema = baseLobbyBaseSchema.pick({ settings: true });
+export const DBUserInputSchema = myProfileSchema
+    .omit({ _id: true })
+    .extend(registerCredentialsSchema.shape);

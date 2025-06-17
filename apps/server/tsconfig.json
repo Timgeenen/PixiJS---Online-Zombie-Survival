@@ -34,6 +34,7 @@
     "paths": {
       "@Config/*": ["config/*"],
       "@Controllers/*": ["controllers/*"],
+      "@Errors/*": ["errors/*"],
       "@Game/*": ["game/*"],
       "@Middleware/*": ["middleware/*"],
       "@Models/*": ["models/*"],

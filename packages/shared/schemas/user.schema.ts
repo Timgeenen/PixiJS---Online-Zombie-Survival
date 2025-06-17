@@ -28,6 +28,10 @@ export const publicProfileSchema = z.object({
     stats: profileStats,
 });
 
+export const lobbyProfileSchema = publicProfileSchema.extend({
+    isReady: z.boolean(),
+});
+
 export const myProfileSchema = publicProfileSchema.extend({
     settings: playerSettings,
 });

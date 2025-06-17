@@ -37,15 +37,15 @@ export const playerSettings = z.object({
 const baseLobbySettingsSchema = z.object({
     difficulty: gameDifficultiesSchema,
 });
-const soloLobbySettingsSchema = baseLobbySettingsSchema.extend({
+export const soloLobbySettingsSchema = baseLobbySettingsSchema.extend({
     gameMode: z.literal('solo'),
 });
-const multiplayerLobbySettingsSchema = baseLobbySettingsSchema.extend({
+export const multiplayerLobbySettingsSchema = baseLobbySettingsSchema.extend({
     gameMode: z.literal('multiplayer'),
-    lobbyName: z.string().min(MIN_LOBBY_NAME_LENGTH).max(MAX_LOBBY_NAME_LENGTH),
+    lobbyName: z.string().trim().min(MIN_LOBBY_NAME_LENGTH).max(MAX_LOBBY_NAME_LENGTH),
     maxPlayers: z.number().gte(2).lte(MAX_PLAYER_LIMIT),
     isPrivate: z.boolean(),
-    password: z.string().optional(),
+    password: z.string().trim().optional(),
 });
 const rawLobbySettingsSchema = z.discriminatedUnion('gameMode', [
     soloLobbySettingsSchema,

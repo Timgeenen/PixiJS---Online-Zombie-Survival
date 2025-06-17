@@ -1,7 +1,6 @@
-import { io, Socket } from 'socket.io-client';
-import type { EmitEvents, ListenerEvents, SocketInstance } from './types';
 import { authorizeUser } from '@Services';
-import type { SocketResponseBase } from '@monorepo/shared';
+import { io, Socket } from 'socket.io-client';
+import type { EmitEvents, ListenerEvents, SocketEvents, SocketInstance } from './types';
 
 export default class SocketIoInstance implements SocketInstance {
     private socket: Socket | null = null;
@@ -33,6 +32,10 @@ export default class SocketIoInstance implements SocketInstance {
         this.socket?.on(event as string, callback);
     }
 
+    off<K extends keyof ListenerEvents>(event: K, callback?: ListenerEvents[K]) {
+        this.socket?.off(event as string, callback);
+    }
+
     emit<K extends keyof EmitEvents>(event: K, ...args: Parameters<EmitEvents[K]>) {
         this.socket?.emit(event, ...args);
     }
@@ -45,9 +48,9 @@ export default class SocketIoInstance implements SocketInstance {
         if (!this.socket) {
             return;
         }
-
         this.socket.on('connect', () => {
             console.log(`connected to socket`);
+            import.meta.env.VITE_ENV === 'dev' && this.socket?.onAny((event) => console.log(event));
         });
         this.socket.on('disconnect', () => {
             console.log('socket disconnected');
@@ -63,5 +66,23 @@ export default class SocketIoInstance implements SocketInstance {
                 }
             }
         });
+    }
+
+    registerListenerEvents<T extends object>(events: SocketEvents<T>) {
+        if (!this.socket) {
+            return;
+        }
+        for (const [event, handler] of Object.entries(events) as [keyof T, T[keyof T]][]) {
+            this.socket.on(event as string, handler as (...args: any[]) => void);
+        }
+    }
+
+    unregisterListenerEvents<T extends object>(events: SocketEvents<T>) {
+        if (!this.socket) {
+            return;
+        }
+        for (const [event, handler] of Object.entries(events) as [keyof T, T[keyof T]][]) {
+            this.socket.off(event as string, handler as (...args: any[]) => void);
+        }
     }
 }
