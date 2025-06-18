@@ -52,8 +52,8 @@ export default class SocketIoInstance implements SocketInstance {
             console.log(`connected to socket`);
             import.meta.env.VITE_ENV === 'dev' && this.socket?.onAny((event) => console.log(event));
         });
-        this.socket.on('disconnect', () => {
-            console.log('socket disconnected');
+        this.socket.on('disconnect', (reason, description) => {
+            console.log(`socket disconnected: ${reason} ${description ? `> ${description}` : ''}`);
         });
         this.socket.on('connect_error', async (err) => {
             if (err.message === 'TOKEN_EXPIRED') {
@@ -65,6 +65,7 @@ export default class SocketIoInstance implements SocketInstance {
                     this.socket?.connect();
                 }
             }
+            console.log(err);
         });
     }
 

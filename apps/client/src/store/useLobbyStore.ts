@@ -1,5 +1,10 @@
 import type { LobbyListListenerEvents } from '@Library/socket/types';
-import { lobbySettingsSchema, type LobbyListData, type LobbySettings, type PublicLobbyProfile } from '@monorepo/shared';
+import {
+    lobbySettingsSchema,
+    type LobbyListData,
+    type LobbySettings,
+    type PublicLobbyProfile,
+} from '@monorepo/shared';
 import type { GetFn, LobbyActions, LobbyState, LobbyStore, SetFn } from '@Types';
 import {
     createLobby,
@@ -11,9 +16,13 @@ import { create } from 'zustand';
 import useAuthStore from './useAuthStore';
 import useSocketStore from './useSocketStore';
 
-const useLobbyStore = create<LobbyStore>((set, get) => ({
+const initialState: LobbyState = {
     currentLobby: null,
     lobbyMap: null,
+};
+
+const useLobbyStore = create<LobbyStore>((set, get) => ({
+    ...initialState,
     joinLobbyList: createJoinLobbyList(set),
     leaveLobbyList: createLeaveLobbyList(set),
     addLobbyToList: createAddLobbyToList(set, get),
@@ -29,13 +38,15 @@ const useLobbyStore = create<LobbyStore>((set, get) => ({
     setPlayerReady: createSetPlayerReady(set, get),
     addNewPlayer: createAddNewPlayer(set, get),
     removePlayer: createRemovePlayer(set, get),
+
+    reset: () => set(() => initialState),
 }));
 
 function createJoinLobbyList(set: SetFn<LobbyState>): LobbyActions['joinLobbyList'] {
     return () => {
         const { socket, lobbyListListenerEvents } = useSocketStore.getState();
         if (!socket) {
-            return console.error("Could not join lobby list: socket not connected");
+            return console.error('Could not join lobby list: socket not connected');
         }
         socket.emit('join_lobby_list', (response) => {
             const { success, message } = response;
@@ -43,60 +54,69 @@ function createJoinLobbyList(set: SetFn<LobbyState>): LobbyActions['joinLobbyLis
                 return console.error(message);
             }
             if (!lobbyListListenerEvents) {
-                return console.error('No lobby list listener events found')
+                return console.error('No lobby list listener events found');
             }
-            socket.registerListenerEvents(lobbyListListenerEvents)
-            set(state => ({
+            socket.registerListenerEvents(lobbyListListenerEvents);
+            set((state) => ({
                 ...state,
-                lobbyMap: new LobbyMap(Object.entries(response.data))
-            }))
-        })
-    }
+                lobbyMap: new LobbyMap(Object.entries(response.data)),
+            }));
+        });
+    };
 }
 
-function createLeaveLobbyList (set: SetFn<LobbyState>): LobbyActions['leaveLobbyList'] {
+function createLeaveLobbyList(set: SetFn<LobbyState>): LobbyActions['leaveLobbyList'] {
     return () => {
         const { socket, lobbyListListenerEvents } = useSocketStore.getState();
         if (!socket) {
-            return console.error("Could not leave lobby list: socket not connected")
+            return console.error('Could not leave lobby list: socket not connected');
         }
         socket.emit('leave_lobby_list');
         if (lobbyListListenerEvents) {
-            socket.unregisterListenerEvents(lobbyListListenerEvents)
+            socket.unregisterListenerEvents(lobbyListListenerEvents);
         }
-        set(state => ({
+        set((state) => ({
             ...state,
-            lobbyMap: null
-        }))
-    }
+            lobbyMap: null,
+        }));
+    };
 }
 
-function createAddLobbyToList(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): LobbyActions['addLobbyToList'] {
+function createAddLobbyToList(
+    set: SetFn<LobbyState>,
+    get: GetFn<LobbyStore>,
+): LobbyActions['addLobbyToList'] {
     return (lobby: LobbyListData) => {
         const { lobbyMap } = get();
         if (!lobbyMap) {
             return console.error('Could not add lobby to map: lobbyMap not found in lobby store');
         }
         lobbyMap.set(lobby._id, lobby);
-        set(state => ({
+        set((state) => ({
             ...state,
-            lobbyMap
-        }))
-    }
+            lobbyMap,
+        }));
+    };
 }
 
-function createRemoveLobbyFromList(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): LobbyListListenerEvents['remove_lobby'] {
+function createRemoveLobbyFromList(
+    set: SetFn<LobbyState>,
+    get: GetFn<LobbyStore>,
+): LobbyListListenerEvents['remove_lobby'] {
     return (lobby_id) => {
         const { lobbyMap } = get();
         if (!lobbyMap) {
             return console.error('Could not remove lobby from map: lobbyMap not found');
         }
         lobbyMap.delete(lobby_id);
-        set(state => ({ ...state, lobbyMap }))
-    }
+        set((state) => ({ ...state, lobbyMap }));
+    };
 }
 
-function createUpdatePlayerCount(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): LobbyListListenerEvents['update_player_count'] {
+function createUpdatePlayerCount(
+    set: SetFn<LobbyState>,
+    get: GetFn<LobbyStore>,
+): LobbyListListenerEvents['update_player_count'] {
     return (lobby_id, currentPlayers) => {
         const { lobbyMap } = get();
         if (!lobbyMap) {
@@ -106,13 +126,15 @@ function createUpdatePlayerCount(set: SetFn<LobbyState>, get: GetFn<LobbyStore>)
         if (!lobby) {
             return console.error('Could not update player count: lobby not found in lobbyMap');
         }
-        lobbyMap.set(lobby_id, { ...lobby, currentPlayers});
-        set(state => ({ ...state, lobbyMap }))
-    }
-
+        lobbyMap.set(lobby_id, { ...lobby, currentPlayers });
+        set((state) => ({ ...state, lobbyMap }));
+    };
 }
 
-function createUpdateInGameStatus(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): LobbyListListenerEvents['update_inGame'] {
+function createUpdateInGameStatus(
+    set: SetFn<LobbyState>,
+    get: GetFn<LobbyStore>,
+): LobbyListListenerEvents['update_inGame'] {
     return (lobby_id, inGame) => {
         const { lobbyMap } = get();
         if (!lobbyMap) {
@@ -122,11 +144,10 @@ function createUpdateInGameStatus(set: SetFn<LobbyState>, get: GetFn<LobbyStore>
         if (!lobby) {
             return console.error('Could not update game status: lobby not found in lobbyMap');
         }
-        lobbyMap.set(lobby_id, {...lobby, inGame});
-        set(state => ({ ...state, lobbyMap}));
-    }
+        lobbyMap.set(lobby_id, { ...lobby, inGame });
+        set((state) => ({ ...state, lobbyMap }));
+    };
 }
-
 
 function createCreateNewLobby(set: SetFn<LobbyState>): LobbyActions['createNewLobby'] {
     return async (settings: LobbySettings) => {
@@ -152,7 +173,10 @@ function createCreateNewLobby(set: SetFn<LobbyState>): LobbyActions['createNewLo
     };
 }
 
-function createJoinLobby(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): LobbyActions['joinLobby'] {
+function createJoinLobby(
+    set: SetFn<LobbyState>,
+    get: GetFn<LobbyStore>,
+): LobbyActions['joinLobby'] {
     return (lobby_id, password = '') => {
         const { currentLobby, addNewPlayer, removePlayer } = get();
         const { socket, lobbyListenerEvents } = useSocketStore.getState();
@@ -224,7 +248,10 @@ function createEmitSetPlayerReady(get: GetFn<LobbyStore>): LobbyActions['emitSet
     };
 }
 
-function createSetPlayerReady(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): LobbyActions['setPlayerReady'] {
+function createSetPlayerReady(
+    set: SetFn<LobbyState>,
+    get: GetFn<LobbyStore>,
+): LobbyActions['setPlayerReady'] {
     return (user_id: string) => {
         const { currentLobby } = get();
         const { socket } = useSocketStore.getState();
@@ -247,7 +274,10 @@ function createSetPlayerReady(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): L
     };
 }
 
-function createAddNewPlayer(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): LobbyActions['addNewPlayer'] {
+function createAddNewPlayer(
+    set: SetFn<LobbyState>,
+    get: GetFn<LobbyStore>,
+): LobbyActions['addNewPlayer'] {
     return (player: PublicLobbyProfile) => {
         const { currentLobby } = get();
         if (!player) {
@@ -276,7 +306,10 @@ function createAddNewPlayer(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): Lob
     };
 }
 
-function createRemovePlayer(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): LobbyActions['removePlayer'] {
+function createRemovePlayer(
+    set: SetFn<LobbyState>,
+    get: GetFn<LobbyStore>,
+): LobbyActions['removePlayer'] {
     return (user_id: string) => {
         const { currentLobby } = get();
         if (!user_id) {
@@ -297,6 +330,5 @@ function createRemovePlayer(set: SetFn<LobbyState>, get: GetFn<LobbyStore>): Lob
         });
     };
 }
-
 
 export default useLobbyStore;

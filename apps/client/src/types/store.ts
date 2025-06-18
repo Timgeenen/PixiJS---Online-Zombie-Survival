@@ -8,35 +8,32 @@ import type { StoreApi } from 'zustand';
 export type SetFn<T> = StoreApi<T>['setState'];
 export type GetFn<T> = StoreApi<T>['getState'];
 
-
-
 export interface AuthState {
     user: null | MyProfile;
     authorized: null | boolean;
 }
 export interface AuthActions {
+    handleLogout: () => void;
     setUser: (user: MyProfile) => void;
     removeUser: () => void;
+    reset: () => void;
 }
 export type AuthStore = AuthState & AuthActions;
-
-
 
 export interface SocketState {
     socket: SocketIoInstance | null;
     isConnectingToSocket: boolean;
     lobbyListenerEvents: LobbyListenerEvents | null;
-    lobbyListListenerEvents: LobbyListListenerEvents | null
+    lobbyListListenerEvents: LobbyListListenerEvents | null;
 }
 export interface SocketActions {
     connectSocket: () => void;
     disconnectSocket: () => void;
     setLobbyListenerEvents: () => void;
     setLobbyListListenerEvents: () => void;
+    reset: () => void;
 }
 export type SocketStore = SocketState & SocketActions;
-
-
 
 export interface LobbyState {
     currentLobby: ClientLobby | null;
@@ -45,7 +42,7 @@ export interface LobbyState {
 export interface LobbyActions {
     joinLobbyList: () => void;
     leaveLobbyList: () => void;
-    addLobbyToList: (lobby: LobbyListData) => void
+    addLobbyToList: (lobby: LobbyListData) => void;
     removeLobbyFromList: (lobby_id: string) => void;
     updatePlayerCount: (lobby_id: string, playerCount: number) => void;
     updateInGameStatus: (lobby_id: string, inGame: boolean) => void;
@@ -58,5 +55,7 @@ export interface LobbyActions {
     addNewPlayer: (player: PublicLobbyProfile) => void;
     removePlayer: (playerId: string) => void;
     createNewLobby: (settings: LobbySettings) => void;
+
+    reset: () => void;
 }
 export type LobbyStore = LobbyActions & LobbyState;

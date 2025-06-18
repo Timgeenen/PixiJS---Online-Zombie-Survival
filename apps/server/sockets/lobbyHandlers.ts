@@ -4,7 +4,11 @@ import { findLobbyById, removeLobbyById } from 'services/lobbyService';
 import type LobbyMap from './lobbyMap';
 import type { Socket } from 'socket.io';
 
-export function setRemoveLobbyTimeout(lobby_id: string, lobbyMap: LobbyMap, socket: Socket): NodeJS.Timeout {
+export function setRemoveLobbyTimeout(
+    lobby_id: string,
+    lobbyMap: LobbyMap,
+    socket: Socket,
+): NodeJS.Timeout {
     return setTimeout(async () => {
         logger.info('Attempting to remove lobby from database');
         if (!(await findLobbyById(lobby_id))) {

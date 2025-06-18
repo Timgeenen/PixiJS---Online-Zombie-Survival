@@ -3,8 +3,8 @@ import { baseLobbyBaseSchema, lobbySettingsSchema } from '../schemas';
 import type { PublicLobbyProfile } from './user';
 
 export type BlackList = Set<string>;
-export type LobbyListData  = Pick<MultiplayerLobbyData, '_id' | 'inGame' | 'settings'> & {
-    currentPlayers: number
+export type LobbyListData = Pick<MultiplayerLobbyData, '_id' | 'inGame' | 'settings'> & {
+    currentPlayers: number;
 };
 export type LobbyList = Record<string, LobbyListData>;
 export type LobbySettings = z.infer<typeof lobbySettingsSchema>;

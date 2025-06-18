@@ -12,15 +12,17 @@ export default class LobbyMap extends Map<string, ServerLobby> {
     }
 
     getLobbyList(): LobbyList {
-        const lobbies: LobbyList = {}
-        this.forEach(lobby => {
-            if (!isMultiplayerLobby(lobby)) { return }
+        const lobbies: LobbyList = {};
+        this.forEach((lobby) => {
+            if (!isMultiplayerLobby(lobby)) {
+                return;
+            }
             lobbies[lobby._id] = {
                 _id: lobby._id,
                 settings: lobby.settings,
-                currentPlayers: lobby.players.size
-            }
-        })
+                currentPlayers: lobby.players.size,
+            };
+        });
         return lobbies;
     }
 

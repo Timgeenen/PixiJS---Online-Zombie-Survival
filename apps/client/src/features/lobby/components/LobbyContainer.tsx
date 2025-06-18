@@ -16,7 +16,7 @@ function LobbyContainer() {
     const hasJoinedRef = useRef(false);
 
     function handleStartGame() {
-        console.log("STARTING GAME")
+        console.log('STARTING GAME');
         // navigate(`/game/${lobbyId}`);
     }
     function handleSetReady() {

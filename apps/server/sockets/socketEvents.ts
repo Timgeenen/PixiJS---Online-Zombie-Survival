@@ -27,7 +27,10 @@ import {
 export function createCreateNewSocketLobby(
     socket: Socket,
     lobbyMap: LobbyMap,
-): (lobbySettings: LobbySettings, callback: (response: SocketResponse<LobbyData>) => void) => Promise<void> {
+): (
+    lobbySettings: LobbySettings,
+    callback: (response: SocketResponse<LobbyData>) => void,
+) => Promise<void> {
     return async (lobbySettings, callback) => {
         logger.info('Socket event received: creating new lobby');
         const user_id = getUserId(socket, callback);
@@ -54,11 +57,11 @@ export function createCreateNewSocketLobby(
         lobbyMap.set(lobby._id, lobby);
         setLobbyId(socket, lobby._id);
         const lobbyData: LobbyData = lobby.getLobbyResponseData();
-        if (isMultiplayerLobby(lobby)){
+        if (isMultiplayerLobby(lobby)) {
             const lobbyListData: LobbyListData = {
                 _id: lobby._id,
                 settings: lobby.settings,
-                currentPlayers: lobby.players.size
+                currentPlayers: lobby.players.size,
             };
             socket.to('lobby_list').emit('add_lobby', lobbyListData);
         }
@@ -144,7 +147,10 @@ export function createLeaveSocketLobby(socket: Socket, lobbyMap: LobbyMap): () =
     };
 }
 
-export function createSetPlayerReady(socket: Socket, lobbyMap: LobbyMap): (callback: (response: SocketResponse<null>) => void) => void {
+export function createSetPlayerReady(
+    socket: Socket,
+    lobbyMap: LobbyMap,
+): (callback: (response: SocketResponse<null>) => void) => void {
     return (callback) => {
         logger.info('Set player ready socket event received');
         const lobby_id = getLobbyId(socket);
@@ -163,19 +169,22 @@ export function createSetPlayerReady(socket: Socket, lobbyMap: LobbyMap): (callb
     };
 }
 
-export function createJoinSocketLobbyList(socket: Socket, lobbyMap: LobbyMap): (callback: (response: SocketResponse<LobbyList>) => void) => void {
+export function createJoinSocketLobbyList(
+    socket: Socket,
+    lobbyMap: LobbyMap,
+): (callback: (response: SocketResponse<LobbyList>) => void) => void {
     return (callback) => {
         logger.info('Joining lobby list room');
         socket.join('lobby_list');
         const lobbies = lobbyMap.getLobbyList();
-        callback({ success: true, message: 'Successfully joined lobby list', data: lobbies});
+        callback({ success: true, message: 'Successfully joined lobby list', data: lobbies });
         logger.info('Successfully joined lobby list room');
-    }
+    };
 }
 
 export function createLeaveSocketLobbyList(socket: Socket): () => void {
     return () => {
         logger.info('Leaving lobby_list socket room');
         socket.leave('lobby_list');
-    }
+    };
 }

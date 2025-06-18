@@ -37,9 +37,7 @@ export interface LobbyListListenerEvents {
 }
 
 export interface EmitEvents {
-    join_lobby_list: (
-        callback: (response: SocketResponse<LobbyList>) => void
-    ) => void;
+    join_lobby_list: (callback: (response: SocketResponse<LobbyList>) => void) => void;
     leave_lobby_list: () => void;
     create_new_lobby: (
         settings: LobbySettings,

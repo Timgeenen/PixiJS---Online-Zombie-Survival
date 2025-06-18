@@ -12,6 +12,8 @@ import {
     createLeaveSocketLobbyList,
     createSetPlayerReady,
 } from './socketEvents';
+import { getUserId } from './socketData';
+import { SocketAuthError } from '@Errors/customSocketErrors';
 
 const socketOptions = {
     cors: {
@@ -23,16 +25,25 @@ const socketOptions = {
 export class SocketInstance {
     private io: Server;
     lobbyMap: LobbyMap;
+    userSet: Set<string>;
 
     constructor(httpServer: HttpServer) {
         this.io = new Server(httpServer, socketOptions);
         this.io.use(errorCatcher(authMiddleware));
         this.lobbyMap = new LobbyMap();
+        this.userSet = new Set();
     }
 
     public init() {
         this.io.on('connection', (socket) => {
-            socket.join(socket.data.user_id);
+            const user_id = getUserId(socket);
+            const isLoggedIn = this.userSet.has(user_id);
+            if (isLoggedIn) {
+                logger.error('user is already logged in: disconnecting socket');
+                return socket.disconnect();
+            }
+            socket.join(user_id);
+            this.userSet.add(user_id);
             logger.info('connected to main socket');
             this.initListenerEvents(socket, this.lobbyMap);
             socket.on('disconnect', (reason) => {
@@ -55,10 +66,12 @@ export class SocketInstance {
     }
 
     private handleCleanup(socket: Socket) {
+        logger.info('Cleaning up socket');
         const { user_id, lobby_id } = socket.data;
-        if (user_id) {
-            return;
+        if (!user_id) {
+            throw new SocketAuthError('Error occured while cleaning up socket: user_id not found');
         }
+        this.userSet.delete(user_id);
         if (lobby_id) {
             const lobby = this.lobbyMap.get(lobby_id);
             if (lobby) {

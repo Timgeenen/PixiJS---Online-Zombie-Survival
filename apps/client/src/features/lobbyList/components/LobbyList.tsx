@@ -1,10 +1,5 @@
-
 function LobbyList() {
-  return (
-    <div>
-      
-    </div>
-  )
+    return <div></div>;
 }
 
-export default LobbyList
+export default LobbyList;

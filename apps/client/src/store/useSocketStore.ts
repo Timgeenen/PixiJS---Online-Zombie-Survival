@@ -4,20 +4,31 @@ import type { GetFn, SetFn, SocketState, SocketStore } from '@Types';
 import { create } from 'zustand';
 import useLobbyStore from './useLobbyStore';
 
-const useSocketStore = create<SocketStore>((set, get) => ({
+const initialState: SocketState = {
     socket: null,
     isConnectingToSocket: false,
     lobbyListenerEvents: null,
     lobbyListListenerEvents: null,
+};
+
+const useSocketStore = create<SocketStore>((set, get) => ({
+    ...initialState,
     connectSocket: createConnectSocket(set, get),
     disconnectSocket: createDisconnectSocket(set, get),
     setLobbyListenerEvents: createSetLobbyListenerEvents(set),
-    setLobbyListListenerEvents: createSetLobbyListListenerEvents(set)
+    setLobbyListListenerEvents: createSetLobbyListListenerEvents(set),
+    reset: createReset(set, get),
 }));
 
 function createConnectSocket(set: SetFn<SocketState>, get: GetFn<SocketStore>) {
     return async () => {
-        const { isConnectingToSocket, lobbyListenerEvents, setLobbyListenerEvents, lobbyListListenerEvents, setLobbyListListenerEvents } = get();
+        const {
+            isConnectingToSocket,
+            lobbyListenerEvents,
+            setLobbyListenerEvents,
+            lobbyListListenerEvents,
+            setLobbyListListenerEvents,
+        } = get();
         const socketIsConnected = !!get().socket;
         if (isConnectingToSocket) {
             return console.error('Could not connect to socket: already connecting');
@@ -70,16 +81,26 @@ function createSetLobbyListenerEvents(set: SetFn<SocketState>) {
 }
 
 function createSetLobbyListListenerEvents(set: SetFn<SocketState>) {
-    const { removeLobbyFromList, addLobbyToList, updateInGameStatus, updatePlayerCount } = useLobbyStore.getState();
+    const { removeLobbyFromList, addLobbyToList, updateInGameStatus, updatePlayerCount } =
+        useLobbyStore.getState();
     return () => {
         const events: LobbyListListenerEvents = {
             remove_lobby: (lobby_id) => removeLobbyFromList(lobby_id),
             add_lobby: (lobby) => addLobbyToList(lobby),
             update_inGame: (lobby_id, inGame) => updateInGameStatus(lobby_id, inGame),
-            update_player_count: (lobby_id, currentPlayers) => updatePlayerCount(lobby_id, currentPlayers)
-        }
-        set(state => ({...state, lobbyListListenerEvents: events}));
-    }
+            update_player_count: (lobby_id, currentPlayers) =>
+                updatePlayerCount(lobby_id, currentPlayers),
+        };
+        set((state) => ({ ...state, lobbyListListenerEvents: events }));
+    };
+}
+
+function createReset(set: SetFn<SocketState>, get: GetFn<SocketStore>) {
+    return () => {
+        const { disconnectSocket } = get();
+        disconnectSocket();
+        set(() => initialState);
+    };
 }
 
 export default useSocketStore;
