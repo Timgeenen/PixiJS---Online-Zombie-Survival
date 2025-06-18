@@ -1,6 +1,8 @@
 import {
     type JoinLobbyData,
     type LobbyData,
+    type LobbyList,
+    type LobbyListData,
     type LobbySettings,
     type PublicLobbyProfile,
     type SocketResponse,
@@ -25,8 +27,8 @@ import {
 export function createCreateNewSocketLobby(
     socket: Socket,
     lobbyMap: LobbyMap,
-): (lobbySettings: LobbySettings, callback: (response: SocketResponse<LobbyData>) => void) => void {
-    return async (lobbySettings, callback): Promise<void> => {
+): (lobbySettings: LobbySettings, callback: (response: SocketResponse<LobbyData>) => void) => Promise<void> {
+    return async (lobbySettings, callback) => {
         logger.info('Socket event received: creating new lobby');
         const user_id = getUserId(socket, callback);
         const settings = validateLobbySettings(lobbySettings, callback);
@@ -52,6 +54,14 @@ export function createCreateNewSocketLobby(
         lobbyMap.set(lobby._id, lobby);
         setLobbyId(socket, lobby._id);
         const lobbyData: LobbyData = lobby.getLobbyResponseData();
+        if (isMultiplayerLobby(lobby)){
+            const lobbyListData: LobbyListData = {
+                _id: lobby._id,
+                settings: lobby.settings,
+                currentPlayers: lobby.players.size
+            };
+            socket.to('lobby_list').emit('add_lobby', lobbyListData);
+        }
         logger.info('Successfully created new lobby');
         return callback({
             success: true,
@@ -64,8 +74,8 @@ export function createCreateNewSocketLobby(
 export function createJoinSocketLobby(
     socket: Socket,
     lobbyMap: LobbyMap,
-): (data: JoinLobbyData, callback: (response: SocketResponse<LobbyData>) => void) => void {
-    return async (data, callback): Promise<void> => {
+): (data: JoinLobbyData, callback: (response: SocketResponse<LobbyData>) => void) => Promise<void> {
+    return async (data, callback) => {
         logger.info('Join lobby request received');
         const result = z
             .object({
@@ -103,6 +113,9 @@ export function createJoinSocketLobby(
         await socket.join(lobby_id);
         setLobbyId(socket, lobby_id);
         socket.broadcast.to(lobby_id).emit('add_new_player', userProfile);
+        if (isMultiplayerLobby(lobby)) {
+            socket.to('lobby_list').emit('update_player_count', lobby_id, lobby.players.size);
+        }
         const lobbyData = lobby.getLobbyResponseData();
         logger.info(`Successfully joined lobby`);
         return callback({
@@ -114,26 +127,29 @@ export function createJoinSocketLobby(
 }
 
 export function createLeaveSocketLobby(socket: Socket, lobbyMap: LobbyMap): () => void {
-    return (): void => {
+    return () => {
         const lobby_id = getLobbyId(socket);
         const user_id = getUserId(socket);
         logger.info(`Leaving lobby: ${lobby_id}`);
         const lobby = lobbyMap.getLobby(lobby_id);
         lobby.removePlayer(user_id);
-        if ((isMultiplayerLobby(lobby) && lobby.isEmptyLobby()) || isSoloLobby(lobby)) {
-            lobbyMap.deleteLobby(lobby_id);
+        if (isMultiplayerLobby(lobby)) {
+            if (lobby.isEmptyLobby() || isSoloLobby(lobby)) {
+                lobbyMap.deleteLobby(lobby_id, socket);
+            }
+            socket.to('lobby_list').emit('update_player_count', lobby_id, lobby.players.size);
         }
         socket.broadcast.to(lobby_id).emit('remove_player', user_id);
         socket.leave(lobby_id);
     };
 }
 
-export function createSetPlayerReady(socket: Socket, lobbies: LobbyMap) {
-    return (callback: (response: SocketResponse<null>) => void): void => {
+export function createSetPlayerReady(socket: Socket, lobbyMap: LobbyMap): (callback: (response: SocketResponse<null>) => void) => void {
+    return (callback) => {
         logger.info('Set player ready socket event received');
         const lobby_id = getLobbyId(socket);
         const user_id = getUserId(socket, callback);
-        const lobby = lobbies.getLobby(lobby_id, callback);
+        const lobby = lobbyMap.getLobby(lobby_id, callback);
         if (!isMultiplayerLobby(lobby)) {
             throw new SocketConflictError(
                 'Could not set player ready: invalid event for solo lobby',
@@ -145,4 +161,21 @@ export function createSetPlayerReady(socket: Socket, lobbies: LobbyMap) {
         logger.info('Set player ready success');
         callback({ success: true, message: 'Player has been updated', data: null });
     };
+}
+
+export function createJoinSocketLobbyList(socket: Socket, lobbyMap: LobbyMap): (callback: (response: SocketResponse<LobbyList>) => void) => void {
+    return (callback) => {
+        logger.info('Joining lobby list room');
+        socket.join('lobby_list');
+        const lobbies = lobbyMap.getLobbyList();
+        callback({ success: true, message: 'Successfully joined lobby list', data: lobbies});
+        logger.info('Successfully joined lobby list room');
+    }
+}
+
+export function createLeaveSocketLobbyList(socket: Socket): () => void {
+    return () => {
+        logger.info('Leaving lobby_list socket room');
+        socket.leave('lobby_list');
+    }
 }

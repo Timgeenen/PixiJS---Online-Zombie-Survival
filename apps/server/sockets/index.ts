@@ -7,7 +7,9 @@ import LobbyMap from './lobbyMap';
 import {
     createCreateNewSocketLobby,
     createJoinSocketLobby,
+    createJoinSocketLobbyList,
     createLeaveSocketLobby,
+    createLeaveSocketLobbyList,
     createSetPlayerReady,
 } from './socketEvents';
 
@@ -20,19 +22,19 @@ const socketOptions = {
 
 export class SocketInstance {
     private io: Server;
-    lobbies: LobbyMap;
+    lobbyMap: LobbyMap;
 
     constructor(httpServer: HttpServer) {
         this.io = new Server(httpServer, socketOptions);
         this.io.use(errorCatcher(authMiddleware));
-        this.lobbies = new LobbyMap();
+        this.lobbyMap = new LobbyMap();
     }
 
     public init() {
         this.io.on('connection', (socket) => {
             socket.join(socket.data.user_id);
             logger.info('connected to main socket');
-            this.initListenerEvents(socket, this.lobbies);
+            this.initListenerEvents(socket, this.lobbyMap);
             socket.on('disconnect', (reason) => {
                 logger.info(`Socket disconnected: ${reason}`);
                 this.handleCleanup(socket);
@@ -40,11 +42,16 @@ export class SocketInstance {
         });
     }
 
-    private initListenerEvents(socket: Socket, lobbies: LobbyMap) {
-        socket.on('create_new_lobby', errorCatcher(createCreateNewSocketLobby(socket, lobbies)));
-        socket.on('join_lobby', errorCatcher(createJoinSocketLobby(socket, lobbies)));
-        socket.on('leave_lobby', errorCatcher(createLeaveSocketLobby(socket, lobbies)));
-        socket.on('player_ready', errorCatcher(createSetPlayerReady(socket, lobbies)));
+    private initListenerEvents(socket: Socket, lobbyMap: LobbyMap) {
+        //lobby listener events
+        socket.on('create_new_lobby', errorCatcher(createCreateNewSocketLobby(socket, lobbyMap)));
+        socket.on('join_lobby', errorCatcher(createJoinSocketLobby(socket, lobbyMap)));
+        socket.on('leave_lobby', errorCatcher(createLeaveSocketLobby(socket, lobbyMap)));
+        socket.on('player_ready', errorCatcher(createSetPlayerReady(socket, lobbyMap)));
+
+        //lobby list listener events
+        socket.on('join_lobby_list', errorCatcher(createJoinSocketLobbyList(socket, lobbyMap)));
+        socket.on('leave_lobby_list', errorCatcher(createLeaveSocketLobbyList(socket)));
     }
 
     private handleCleanup(socket: Socket) {
@@ -53,12 +60,12 @@ export class SocketInstance {
             return;
         }
         if (lobby_id) {
-            const lobby = this.lobbies.get(lobby_id);
+            const lobby = this.lobbyMap.get(lobby_id);
             if (lobby) {
                 lobby.removePlayer(user_id);
                 socket.to(lobby_id).emit('remove_player', user_id);
                 if (lobby.isEmptyLobby()) {
-                    this.lobbies.deleteLobby(lobby_id);
+                    this.lobbyMap.deleteLobby(lobby_id, socket);
                 }
             }
         }

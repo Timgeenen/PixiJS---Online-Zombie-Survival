@@ -4,16 +4,19 @@ import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
 import useSocketStore from 'src/store/useSocketStore';
 import PlayerBanner from './PlayerBanner';
+import useLobbyStore from 'src/store/useLobbyStore';
 
 function LobbyContainer() {
     const { lobbyId } = useParams();
-    const { socket, currentLobby, joinLobby, leaveLobby, emitSetPlayerReady } = useSocketStore(
+    const { socket } = useSocketStore((state) => state);
+    const { currentLobby, joinLobby, leaveLobby, emitSetPlayerReady } = useLobbyStore(
         (state) => state,
     );
     const { user } = useAuthStore((state) => state);
     const hasJoinedRef = useRef(false);
 
     function handleStartGame() {
+        console.log("STARTING GAME")
         // navigate(`/game/${lobbyId}`);
     }
     function handleSetReady() {
@@ -56,9 +59,9 @@ function LobbyContainer() {
         <div className="flex flex-col gap-2">
             <ul>{...Players}</ul>
             {user?._id === currentLobby.leader ? (
-                <Button onClick={handleSetReady}>Ready</Button>
-            ) : (
                 <Button onClick={handleStartGame}>Start Game</Button>
+            ) : (
+                <Button onClick={handleSetReady}>Ready</Button>
             )}
             <NavButton path="/lobbylist">Leave Lobby</NavButton>
         </div>

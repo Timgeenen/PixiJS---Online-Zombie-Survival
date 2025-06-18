@@ -1,8 +1,10 @@
 import type {
     JoinLobbyData,
+    LobbyData,
+    LobbyList,
+    LobbyListData,
     LobbySettings,
     PublicLobbyProfile,
-    ResponseLobbyData,
     SocketResponse,
     // SocketJoinLobbyData,
     // SocketJoinLobbyResponse,
@@ -27,14 +29,25 @@ export interface LobbyListenerEvents {
     remove_player: (playerId: string) => void;
 }
 
+export interface LobbyListListenerEvents {
+    add_lobby: (lobby: LobbyListData) => void;
+    remove_lobby: (lobby_id: string) => void;
+    update_inGame: (lobby_id: string, inGame: boolean) => void;
+    update_player_count: (lobby_id: string, currentPlayers: number) => void;
+}
+
 export interface EmitEvents {
+    join_lobby_list: (
+        callback: (response: SocketResponse<LobbyList>) => void
+    ) => void;
+    leave_lobby_list: () => void;
     create_new_lobby: (
         settings: LobbySettings,
-        callback: (response: SocketResponse<ResponseLobbyData>) => void,
+        callback: (response: SocketResponse<LobbyData>) => void,
     ) => void;
     join_lobby: (
         data: JoinLobbyData,
-        callback: (response: SocketResponse<ResponseLobbyData>) => void,
+        callback: (response: SocketResponse<LobbyData>) => void,
     ) => void;
     leave_lobby: () => void;
     player_ready: (callback: (response: SocketResponse<void>) => void) => void;

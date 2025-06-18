@@ -7,10 +7,9 @@ import {
 } from '@monorepo/shared';
 import { GAME_DIFFICULTIES } from '@monorepo/shared/constants';
 import { useEffect, useState } from 'react';
-import useCreateLobbyMutation from '../hooks/useCreateLobbyMutation';
-import SettingFields from './SettingFields';
-import useSocketStore from 'src/store/useSocketStore';
 import { useNavigate } from 'react-router';
+import useLobbyStore from 'src/store/useLobbyStore';
+import SettingFields from './SettingFields';
 
 function LobbySettingsContainer() {
     const navigate = useNavigate();
@@ -23,7 +22,7 @@ function LobbySettingsContainer() {
     const [maxPlayers, setMaxPlayers] = useState<number>(4);
     const [isPrivate, setIsPrivate] = useState<boolean>(false);
     const [password, setPassword] = useState<string>('');
-    const { createNewLobby, currentLobby } = useSocketStore();
+    const { createNewLobby, currentLobby } = useLobbyStore();
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
