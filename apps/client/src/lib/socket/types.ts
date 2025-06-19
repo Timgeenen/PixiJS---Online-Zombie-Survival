@@ -6,10 +6,6 @@ import type {
     LobbySettings,
     PublicLobbyProfile,
     SocketResponse,
-    // SocketJoinLobbyData,
-    // SocketJoinLobbyResponse,
-    // SocketLeaveLobbyData,
-    // SocketResponseBase,
 } from '@monorepo/shared';
 
 export type SocketEvents<T> = {
@@ -27,6 +23,7 @@ export interface LobbyListenerEvents {
     set_player_ready: (playerId: string) => void;
     add_new_player: (player: PublicLobbyProfile) => void;
     remove_player: (playerId: string) => void;
+    start_lobby: (lobby_id: string) => void;
 }
 
 export interface LobbyListListenerEvents {
@@ -34,9 +31,11 @@ export interface LobbyListListenerEvents {
     remove_lobby: (lobby_id: string) => void;
     update_inGame: (lobby_id: string, inGame: boolean) => void;
     update_player_count: (lobby_id: string, currentPlayers: number) => void;
+    start_lobby: (lobby_id: string) => void;
 }
 
 export interface EmitEvents {
+    start_lobby: () => void;
     join_lobby_list: (callback: (response: SocketResponse<LobbyList>) => void) => void;
     leave_lobby_list: () => void;
     create_new_lobby: (

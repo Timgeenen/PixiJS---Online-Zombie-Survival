@@ -1,45 +1,33 @@
 import { Button, NavButton } from '@Components';
 import { useAuthStore } from '@Store';
-import { useEffect, useRef } from 'react';
-import { useParams } from 'react-router';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router';
+import useLobbyStore from 'src/store/useLobbyStore';
 import useSocketStore from 'src/store/useSocketStore';
 import PlayerBanner from './PlayerBanner';
-import useLobbyStore from 'src/store/useLobbyStore';
 
 function LobbyContainer() {
-    const { lobbyId } = useParams();
+    const { lobby_id } = useParams();
     const { socket } = useSocketStore((state) => state);
-    const { currentLobby, joinLobby, leaveLobby, emitSetPlayerReady } = useLobbyStore(
-        (state) => state,
-    );
+    const { currentLobby, joinLobby, leaveLobby, emitSetPlayerReady, emitStartLobby } =
+        useLobbyStore((state) => state);
     const { user } = useAuthStore((state) => state);
-    const hasJoinedRef = useRef(false);
-
-    function handleStartGame() {
-        console.log('STARTING GAME');
-        // navigate(`/game/${lobbyId}`);
-    }
-    function handleSetReady() {
-        if (!user) {
-            return console.error('Could not set player ready: player not found');
-        }
-        emitSetPlayerReady(user._id);
-        if (!lobbyId) {
-            return console.error('could not find lobbyId');
-        }
-    }
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (!socket?.connected || !lobbyId || hasJoinedRef.current) return;
-        joinLobby(lobbyId);
-        hasJoinedRef.current = true;
+        if (!socket?.connected || !lobby_id) return;
+        joinLobby(lobby_id);
         return () => {
-            if (hasJoinedRef.current) {
-                leaveLobby(lobbyId);
-                hasJoinedRef.current = false;
-            }
+            leaveLobby(lobby_id);
         };
-    }, [socket?.connected, lobbyId]);
+    }, [socket?.connected, lobby_id]);
+
+    useEffect(() => {
+        if (!currentLobby?.inGame) {
+            return;
+        }
+        navigate(`/game/${lobby_id}`);
+    }, [currentLobby?.inGame]);
 
     if (!currentLobby) {
         return <h1 className="text-9xl">Loading...</h1>;
@@ -59,9 +47,9 @@ function LobbyContainer() {
         <div className="flex flex-col gap-2">
             <ul>{...Players}</ul>
             {user?._id === currentLobby.leader ? (
-                <Button onClick={handleStartGame}>Start Game</Button>
+                <Button onClick={emitStartLobby}>Start Game</Button>
             ) : (
-                <Button onClick={handleSetReady}>Ready</Button>
+                <Button onClick={emitSetPlayerReady}>Ready</Button>
             )}
             <NavButton path="/lobbylist">Leave Lobby</NavButton>
         </div>

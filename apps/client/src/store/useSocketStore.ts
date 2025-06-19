@@ -67,11 +67,12 @@ function createDisconnectSocket(set: SetFn<SocketState>, get: GetFn<SocketStore>
 
 function createSetLobbyListenerEvents(set: SetFn<SocketState>) {
     return () => {
-        const { setPlayerReady, addNewPlayer, removePlayer } = useLobbyStore.getState();
+        const { setPlayerReady, addNewPlayer, removePlayer, startLobby } = useLobbyStore.getState();
         const events: LobbyListenerEvents = {
             set_player_ready: (playerId) => setPlayerReady(playerId),
             add_new_player: (player) => addNewPlayer(player),
             remove_player: (playerId) => removePlayer(playerId),
+            start_lobby: (lobby_id) => startLobby(lobby_id),
         };
         set((state) => ({
             ...state,
@@ -81,10 +82,16 @@ function createSetLobbyListenerEvents(set: SetFn<SocketState>) {
 }
 
 function createSetLobbyListListenerEvents(set: SetFn<SocketState>) {
-    const { removeLobbyFromList, addLobbyToList, updateInGameStatus, updatePlayerCount } =
-        useLobbyStore.getState();
+    const {
+        removeLobbyFromList,
+        addLobbyToList,
+        updateInGameStatus,
+        updatePlayerCount,
+        startLobby,
+    } = useLobbyStore.getState();
     return () => {
         const events: LobbyListListenerEvents = {
+            start_lobby: (lobby_id) => startLobby(lobby_id),
             remove_lobby: (lobby_id) => removeLobbyFromList(lobby_id),
             add_lobby: (lobby) => addLobbyToList(lobby),
             update_inGame: (lobby_id, inGame) => updateInGameStatus(lobby_id, inGame),

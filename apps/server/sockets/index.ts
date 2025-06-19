@@ -11,6 +11,7 @@ import {
     createLeaveSocketLobby,
     createLeaveSocketLobbyList,
     createSetPlayerReady,
+    createStartLobby,
 } from './socketEvents';
 import { getUserId } from './socketData';
 import { SocketAuthError } from '@Errors/customSocketErrors';
@@ -48,7 +49,7 @@ export class SocketInstance {
             this.initListenerEvents(socket, this.lobbyMap);
             socket.on('disconnect', (reason) => {
                 logger.info(`Socket disconnected: ${reason}`);
-                this.handleCleanup(socket);
+                errorCatcher(() => this.handleCleanup(socket))();
             });
         });
     }
@@ -59,6 +60,7 @@ export class SocketInstance {
         socket.on('join_lobby', errorCatcher(createJoinSocketLobby(socket, lobbyMap)));
         socket.on('leave_lobby', errorCatcher(createLeaveSocketLobby(socket, lobbyMap)));
         socket.on('player_ready', errorCatcher(createSetPlayerReady(socket, lobbyMap)));
+        socket.on('start_lobby', errorCatcher(createStartLobby(socket, this.io, lobbyMap)));
 
         //lobby list listener events
         socket.on('join_lobby_list', errorCatcher(createJoinSocketLobbyList(socket, lobbyMap)));

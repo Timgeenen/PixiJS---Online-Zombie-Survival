@@ -40,6 +40,19 @@ export abstract class ServerLobbyBase extends Lobby {
         logger.info('Could not clear timeout: no timer found');
     }
 
+    public startLobby(user_id: string, callback?: SocketCallback): void {
+        if (user_id !== this.leader) {
+            throw new SocketForbiddenError(
+                'Could not start lobby: user_id does not match leader id',
+                callback && {
+                    callback,
+                    clientMessage: 'Could not start lobby: you are not the lobby leader',
+                },
+            );
+        }
+        this.inGame = true;
+    }
+
     public isEmptyLobby(): boolean {
         return this.players.size === 0;
     }
@@ -158,6 +171,19 @@ export class ServerMultiplayerLobby extends ServerLobbyBase {
         }
     }
 
+    public allPlayersReady(): boolean {
+        let allPlayersReady = true;
+        for (const [_, player] of this.players) {
+            if (this.leader === player._id) {
+                continue;
+            }
+            if (!player.isReady) {
+                allPlayersReady = false;
+                break;
+            }
+        }
+        return allPlayersReady;
+    }
     public isLobbyFull(): boolean {
         return this.players.size >= this.settings.maxPlayers;
     }

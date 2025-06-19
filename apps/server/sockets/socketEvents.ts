@@ -8,10 +8,15 @@ import {
     type SocketResponse,
 } from '@monorepo/shared';
 import logger from '@Utils/logger';
-import { SocketAuthError, SocketConflictError, SocketError } from 'errors/customSocketErrors';
+import {
+    SocketAuthError,
+    SocketConflictError,
+    SocketError,
+    SocketNotFoundError,
+} from 'errors/customSocketErrors';
 import { createNewLobby } from 'services/lobbyService';
 import { findUserById } from 'services/userService';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
 import type LobbyMap from './lobbyMap';
 import { getLobbyId, getUserId, removeLobbyId, setLobbyId } from './socketData';
@@ -186,5 +191,26 @@ export function createLeaveSocketLobbyList(socket: Socket): () => void {
     return () => {
         logger.info('Leaving lobby_list socket room');
         socket.leave('lobby_list');
+    };
+}
+
+export function createStartLobby(socket: Socket, io: Server, lobbyMap: LobbyMap): () => void {
+    return () => {
+        logger.info('Starting lobby');
+        const lobby_id = getLobbyId(socket);
+        const user_id = getUserId(socket);
+        if (!lobby_id) {
+            throw new SocketNotFoundError('Could not start lobby: lobby_id not found in socket');
+        }
+        if (!user_id) {
+            throw new SocketAuthError('Could not start lobby: user_id not found in socket');
+        }
+        const lobby = lobbyMap.getLobby(lobby_id);
+        if (isMultiplayerLobby(lobby) && !lobby.allPlayersReady()) {
+            throw new SocketConflictError('Could not start lobby: players not ready');
+        }
+        lobby.startLobby(user_id);
+        io.to(lobby_id).emit('start_lobby', lobby_id);
+        logger.info('Start lobby success');
     };
 }

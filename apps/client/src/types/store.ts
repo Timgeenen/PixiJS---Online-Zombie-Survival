@@ -47,10 +47,12 @@ export interface LobbyActions {
     updatePlayerCount: (lobby_id: string, playerCount: number) => void;
     updateInGameStatus: (lobby_id: string, inGame: boolean) => void;
 
+    emitStartLobby: () => void;
+    startLobby: (lobby_id: string) => void;
     joinLobby: (lobbyId: string) => void;
     leaveLobby: (lobbyId: string) => void;
     setLobby: (lobby: ClientLobby) => void;
-    emitSetPlayerReady: (playerId: string) => void;
+    emitSetPlayerReady: () => void;
     setPlayerReady: (playerId: string) => void;
     addNewPlayer: (player: PublicLobbyProfile) => void;
     removePlayer: (playerId: string) => void;

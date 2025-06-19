@@ -16,6 +16,11 @@ import { create } from 'zustand';
 import useAuthStore from './useAuthStore';
 import useSocketStore from './useSocketStore';
 
+let isJoiningLobby = false;
+let isJoiningLobbyList = false;
+let lobbyEventsRegistered = false;
+let lobbyListEventsRegistered = false;
+
 const initialState: LobbyState = {
     currentLobby: null,
     lobbyMap: null,
@@ -38,6 +43,8 @@ const useLobbyStore = create<LobbyStore>((set, get) => ({
     setPlayerReady: createSetPlayerReady(set, get),
     addNewPlayer: createAddNewPlayer(set, get),
     removePlayer: createRemovePlayer(set, get),
+    emitStartLobby: createEmitStartLobby(get),
+    startLobby: createStartLobby(set, get),
 
     reset: () => set(() => initialState),
 }));
@@ -45,18 +52,26 @@ const useLobbyStore = create<LobbyStore>((set, get) => ({
 function createJoinLobbyList(set: SetFn<LobbyState>): LobbyActions['joinLobbyList'] {
     return () => {
         const { socket, lobbyListListenerEvents } = useSocketStore.getState();
+        if (isJoiningLobbyList) {
+            return console.error('joining lobby list in progress');
+        }
         if (!socket) {
             return console.error('Could not join lobby list: socket not connected');
         }
+        isJoiningLobbyList = true;
         socket.emit('join_lobby_list', (response) => {
             const { success, message } = response;
+            isJoiningLobbyList = false;
             if (!success) {
                 return console.error(message);
             }
             if (!lobbyListListenerEvents) {
                 return console.error('No lobby list listener events found');
             }
-            socket.registerListenerEvents(lobbyListListenerEvents);
+            if (!lobbyListEventsRegistered) {
+                socket.registerListenerEvents(lobbyListListenerEvents);
+                lobbyListEventsRegistered = true;
+            }
             set((state) => ({
                 ...state,
                 lobbyMap: new LobbyMap(Object.entries(response.data)),
@@ -67,13 +82,15 @@ function createJoinLobbyList(set: SetFn<LobbyState>): LobbyActions['joinLobbyLis
 
 function createLeaveLobbyList(set: SetFn<LobbyState>): LobbyActions['leaveLobbyList'] {
     return () => {
+        isJoiningLobbyList = false;
         const { socket, lobbyListListenerEvents } = useSocketStore.getState();
         if (!socket) {
             return console.error('Could not leave lobby list: socket not connected');
         }
         socket.emit('leave_lobby_list');
-        if (lobbyListListenerEvents) {
+        if (lobbyListListenerEvents && lobbyListEventsRegistered) {
             socket.unregisterListenerEvents(lobbyListListenerEvents);
+            lobbyListEventsRegistered = false;
         }
         set((state) => ({
             ...state,
@@ -181,6 +198,9 @@ function createJoinLobby(
         const { currentLobby, addNewPlayer, removePlayer } = get();
         const { socket, lobbyListenerEvents } = useSocketStore.getState();
         const { user } = useAuthStore.getState();
+        if (isJoiningLobby) {
+            return console.error('Already joining lobby');
+        }
         if (!socket) {
             return console.error('Could not join lobby: no socket connected');
         }
@@ -189,8 +209,10 @@ function createJoinLobby(
             const { settings, ...publicUser } = user;
             addNewPlayer({ ...publicUser, isReady: false });
         }
+        isJoiningLobby = true;
         socket.emit('join_lobby', { lobby_id, password }, (response) => {
             const { success, message } = response;
+            isJoiningLobby = false;
             if (!success) {
                 if (currentLobby && user) {
                     removePlayer(user._id);
@@ -200,8 +222,11 @@ function createJoinLobby(
             if (!lobbyListenerEvents) {
                 return console.error('No lobby event listeners found');
             }
+            if (!lobbyEventsRegistered) {
+                socket.registerListenerEvents(lobbyListenerEvents);
+                lobbyEventsRegistered = true;
+            }
             const lobby = currentLobby ?? createLobby(response.data);
-            socket.registerListenerEvents(lobbyListenerEvents);
             set((state) => ({
                 ...state,
                 currentLobby: lobby,
@@ -213,14 +238,16 @@ function createJoinLobby(
 function createLeaveLobby(set: SetFn<LobbyState>): LobbyActions['leaveLobby'] {
     return () => {
         const { socket, lobbyListenerEvents } = useSocketStore.getState();
+        isJoiningLobby = false;
         if (!socket) {
             return console.error('Could not leave lobby: no socket connected');
         }
         socket.emit('leave_lobby');
-        if (lobbyListenerEvents) {
+        if (lobbyListenerEvents && lobbyEventsRegistered) {
             socket.unregisterListenerEvents(lobbyListenerEvents);
+            lobbyEventsRegistered = false;
         }
-        set((state) => ({ ...state, lobbyListenerEvents: null, currentLobby: null }));
+        set((state) => ({ ...state, currentLobby: null }));
     };
 }
 
@@ -231,18 +258,22 @@ function createSetLobby(set: SetFn<LobbyState>): LobbyActions['setLobby'] {
 }
 
 function createEmitSetPlayerReady(get: GetFn<LobbyStore>): LobbyActions['emitSetPlayerReady'] {
-    return (user_id: string) => {
+    return () => {
         const { setPlayerReady } = get();
         const { socket } = useSocketStore.getState();
+        const { user } = useAuthStore.getState();
+        if (!user) {
+            return console.error('Could not set player ready: player not found in store');
+        }
         if (!socket) {
             throw new Error('Could not set player ready: socket not connected');
         }
-        setPlayerReady(user_id);
+        setPlayerReady(user._id);
         socket.emit('player_ready', (response) => {
             const { message, success } = response;
             if (!success) {
                 console.error(message);
-                return setPlayerReady(user_id);
+                return setPlayerReady(user._id);
             }
         });
     };
@@ -267,8 +298,8 @@ function createSetPlayerReady(
         if (user_id === currentLobby.leader) {
             return console.error('Could not set player ready: player is lobby leader');
         }
+        currentLobby.setPlayerReady(user_id);
         set((state) => {
-            currentLobby.setPlayerReady(user_id);
             return { ...state, currentLobby };
         });
     };
@@ -328,6 +359,39 @@ function createRemovePlayer(
                 currentLobby,
             };
         });
+    };
+}
+
+function createEmitStartLobby(get: GetFn<LobbyStore>): LobbyActions['emitStartLobby'] {
+    return () => {
+        const { currentLobby } = get();
+        const { socket } = useSocketStore.getState();
+        if (!socket) {
+            return console.error('Could not start game: no socket found');
+        }
+        if (!currentLobby) {
+            return console.error('Could not start game: not connected to any lobby');
+        }
+        socket.emit('start_lobby');
+    };
+}
+
+function createStartLobby(
+    set: SetFn<LobbyState>,
+    get: GetFn<LobbyStore>,
+): LobbyActions['startLobby'] {
+    return (lobby_id: string) => {
+        const { currentLobby } = get();
+        if (!currentLobby) {
+            return console.error('Could not start lobby: lobby not found in store');
+        }
+        if (lobby_id !== currentLobby._id) {
+            return console.error(
+                'Could not start lobby: lobby_id param does not match lobby store _id',
+            );
+        }
+        currentLobby.inGame = true;
+        set((state) => ({ ...state, currentLobby }));
     };
 }
 
