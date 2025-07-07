@@ -10,7 +10,7 @@ export default class MovementPredictSystem<G extends Game> extends System {
         for (const [e, velocity] of this.game.velocityMap) {
             const { vx, vy } = velocity;
             if (vx === 0 && vy === 0) {
-                return;
+                continue;
             }
             let speed = this.game.speedMap.get(e);
             if (!speed) {
@@ -19,9 +19,10 @@ export default class MovementPredictSystem<G extends Game> extends System {
             }
             const position = this.game.positionMap.get(e);
             if (!position) {
-                return console.error(
+                console.error(
                     `[ClientMovementSystem] could not update position: position not found: entity ${e}`,
                 );
+                continue
             }
             const x = position.x + vx * speed.px;
             const y = position.y + vy * speed.px;

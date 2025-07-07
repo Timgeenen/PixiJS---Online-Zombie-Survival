@@ -44,6 +44,7 @@ export default class ClientGame extends Game {
         this.systems.inputSystem.update(dt);
         this.systems.weaponSwitchSystem.update(dt)
         this.systems.reloadSystemA.update(dt);
+        this.systems.fireControlSystem.update(dt);
         this.systems.ammoSystem.update(dt);
         this.systems.reloadSystemB.update(dt);
         this.systems.movementPredictSystem.update(dt)

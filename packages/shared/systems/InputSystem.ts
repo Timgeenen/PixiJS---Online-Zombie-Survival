@@ -37,7 +37,7 @@ export default class InputSystem<G extends Game> extends System {
                 shoot = 1;
             }
         }
-        if (changeWeapon !== 0) {
+        if (changeWeapon === 1) {
             this.game.createComponent(entity, 'SwitchWeapon', { count: changeWeapon });
         }
         const { mx, my, aim } = queue[queue.length - 1]!;

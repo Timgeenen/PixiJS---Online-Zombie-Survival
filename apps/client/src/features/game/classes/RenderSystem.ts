@@ -51,7 +51,7 @@ export default class RenderSystem extends System {
 
     createBulletSprite(e: Entity) {
         const bulletRef = this.game.ammoTypeMap.get(e);
-        if(!bulletRef) { return }
+        if(!bulletRef) { return console.error('Could not render bullet: no bullet sprite found') }
         const bullet: Texture = Assets.get(bulletRef.name);
         const sprite = Sprite.from(bullet);
         this.sprites.set(e, sprite);

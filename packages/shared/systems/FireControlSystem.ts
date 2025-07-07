@@ -4,24 +4,22 @@ import type { ComponentData, Entity } from '../schemas';
 export default class FireControlSystem<G extends Game> {
     constructor(protected game: G) {}
 
-    update(dt: number) {
+    update(dt: number): void {
         for (const [e, input] of this.game.inputStateMap) {
-            if (!input.shoot || input.reload) {
-                return;
+            if (!input.shoot || this.game.isReloadingMap.has(e)) {
+                continue;
             }
             const weapon = this.getWeapon(e)?.entity;
-            if (!weapon || this.isReloading(weapon)) {
-                return;
+            if (!weapon) {
+                console.error('Could not spawn bullet: no weapon found for entity');
+                continue
             }
             const weaponCooldowns = this.getFireCooldown(weapon);
-            const fireRate = this.getFireRate(weapon)?.ticks;
-            if (!weaponCooldowns || !fireRate) {
-                return;
+            if (!weaponCooldowns) {
+                console.error('Could not spawn bullet: no weaponcooldowns found');
+                continue
             }
-            this.game.updateComponent(weapon, 'WeaponCooldowns', {
-                ...weaponCooldowns,
-                reload: this.game.currentTick + fireRate,
-            });
+            if (!this.canShoot(weaponCooldowns)) { continue }
             this.game.queues.fireReq.push({
                 shooter: e,
                 weapon: weapon,
@@ -30,8 +28,8 @@ export default class FireControlSystem<G extends Game> {
         }
     }
 
-    isReloading(e: Entity): boolean {
-        return this.game.reloadCooldownMap.has(e);
+    canShoot(cooldowns: ComponentData<'WeaponCooldowns'>): boolean {
+        return cooldowns.fireRate <= this.game.currentTick && cooldowns.reload <= this.game.currentTick;
     }
     getFireCooldown(e: Entity): ComponentData<'WeaponCooldowns'> | undefined {
         return this.game.weaponCooldownsMap.get(e);

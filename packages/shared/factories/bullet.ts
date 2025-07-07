@@ -15,7 +15,7 @@ export default function createBullet<G extends Game>(
     const template: EntityTemplate = {
         Owner: { entity: data.owner },
         Position: data.position,
-        Velocity: getVelocity(data.aim, bulletTemplate.Speed!.px),
+        Velocity: getVelocity(data.aim),
         ...bulletBaseTemplate,
         ...bulletTemplate,
         ...extra,

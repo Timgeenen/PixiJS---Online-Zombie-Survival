@@ -67,7 +67,7 @@ export abstract class Game {
     constructor(data: GameState) {
         for (const key of Object.keys(ComponentSchemas) as ComponentType[]) {
             const mapName = this.getMapName(key);
-            this[mapName] = new Map(data[key] ? Object.entries(data[key]) : []);
+            this[mapName] = new Map(data[key] ? Object.entries(data[key]).map(([k, v]) => [Number(k), v]) : []);
         }
         this.currentTick = 0;
 
@@ -89,6 +89,7 @@ export abstract class Game {
             const typedComp = comp as ComponentType;
             this.createComponent(e, typedComp, val);
         }
+        this.queues.justSpawned.push({ entity: e });
     }
 
     createComponent<K extends ComponentType>(

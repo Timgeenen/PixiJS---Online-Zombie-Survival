@@ -10,7 +10,7 @@ export default class ReloadSystemA<G extends Game> extends System {
     override update(dt: number): void {
         for (const e of this.game.isReloadingMap.keys()) {
             if (this.isReloading(e)) {
-                return;
+                continue;
             }
             this.reloadWeapon(e);
             this.game.removeComponent(e, 'IsReloading');
@@ -18,7 +18,11 @@ export default class ReloadSystemA<G extends Game> extends System {
     }
 
     isReloading(e: Entity): boolean {
-        return this.game.reloadCooldownMap.has(e);
+        const reload = this.game.weaponCooldownsMap.get(e)?.reload;
+        if (!reload) {
+            return false;
+        }
+        return reload > this.game.currentTick;
     }
 
     reloadWeapon(e: Entity): void {
@@ -29,7 +33,7 @@ export default class ReloadSystemA<G extends Game> extends System {
         const { current, total, max, clipSize } = ammo;
         const updatedAmmo: ComponentData<'Ammo'> = {
             current: clipSize,
-            total: total - (clipSize - current),
+            total: total === 'inf' ? 'inf' : total - (clipSize - current),
             max,
             clipSize,
         };

@@ -16,6 +16,12 @@ export default function createWeapon<G extends Game>(
         ...WeaponTemplates[data.type],
         ...extra,
     };
+    const inventory = game.weaponInventoryMap.get(data.owner)!;
+    if (inventory && inventory.entities.length === 0) {
+        game.currentWeaponMap.set(data.owner, { entity: e })
+    }
+    inventory.entities.push(e);
+    game.weaponInventoryMap.set(data.owner, inventory)
     game.forgeTemplate(e, template);
     return e;
 }

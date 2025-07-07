@@ -89,7 +89,7 @@ const KeybindingsSchema = new mongoose.Schema<Keybindings>(
         prevWeapon: {
             type: String,
             required: true,
-            defaul: 'Q',
+            default: 'Q',
         },
     },
     { _id: false },

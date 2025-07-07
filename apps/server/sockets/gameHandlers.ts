@@ -4,6 +4,7 @@ import type { ServerLobby } from './classes/Lobby';
 import { ServerGame } from './classes/ServerGame';
 import type { GameMap } from './gameMap';
 import { createPlayer } from '@monorepo/shared/factories/player';
+import createWeapon from '@monorepo/shared/factories/weapon';
 
 export function createGameInstance(
     lobby: ServerLobby,
@@ -15,10 +16,14 @@ export function createGameInstance(
     logger.info('spawning players');
     let x = 200;
     for (const [_, value] of lobby.players) {
-        createPlayer(GameInstance, {
+        const e = createPlayer(GameInstance, {
             type: 'player',
             position: { y: 300, x},
             profile: value
+        });
+        createWeapon(GameInstance, {
+            type: 'pistol',
+            owner: e
         })
         x += 100;
     }

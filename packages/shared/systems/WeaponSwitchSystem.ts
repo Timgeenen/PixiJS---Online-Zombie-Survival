@@ -10,17 +10,17 @@ export default class WeaponSwitchSystem<G extends Game> extends System {
         for (const [e, data] of this.game.switchWeaponMap) {
             const inventory = this.game.weaponInventoryMap.get(e);
             if (!inventory || inventory.entities.length <= 1) {
-                return;
+                continue;
             }
             const currentWeapon = this.game.currentWeaponMap.get(e)!.entity;
             const currentIndex = inventory.entities.findIndex((weapon) => weapon === currentWeapon);
             if (!currentIndex) {
                 this.game.updateComponent(e, 'CurrentWeapon', { entity: inventory.entities[0]! });
-                return;
+                continue;
             }
             const newIndex = (inventory.entities.length % data.count) + currentIndex;
             if (newIndex === currentIndex) {
-                return;
+                continue;
             }
             this.game.updateComponent(e, 'CurrentWeapon', {
                 entity: inventory.entities[newIndex]!,

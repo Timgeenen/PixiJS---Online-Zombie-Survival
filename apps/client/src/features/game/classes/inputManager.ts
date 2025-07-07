@@ -39,6 +39,7 @@ export default class InputManager {
         aimLeft: false,
         aimRight: false,
         shoot: false,
+        reload: false
     }
     private pressed = {
         up: false,
@@ -106,18 +107,18 @@ export default class InputManager {
         const aimRadian = this.getRadian(aimLeft, aimRight, aimUp, aimDown);
         const walkRadian = this.getRadian(left, right, up, down);
         const { mx, my } = this.getMovement(walkRadian);
-        console.log(walkRadian)
         const snapshot = {
             seq: this.seq++,
             dt,
             mx,
             my,
-            shoot: this.state.shoot ? 1 : 0,
+            shoot: this.inputState.shoot ? 1 : 0,
             aim: aimRadian ?? walkRadian ?? this.state.aim,
-            reload: this.state.reload ? 1 : 0,
+            reload: this.inputState.reload ? 1 : 0,
             changeWeapon: this.state.changeWeapon,
         };
         this.state.changeWeapon = 0;
+        this.state.aim = snapshot.aim;
         this.prevInputState = inputState;
         this.queue.push(snapshot);
     }
@@ -150,86 +151,72 @@ export default class InputManager {
 
     handleKeyup(e: KeyboardEvent): void {
         e.preventDefault();
-        const event = this.keybindings[e.key.toUpperCase()];
-        if (!event) {
-            return;
-        }
-        if (event === 'up') {
-            return this.handleKeyupUp();
-        }
-        if (event === 'down') {
-            return this.handleKeyupDown();
-        }
-        if (event === 'left') {
-            return this.handleKeyupLeft();
-        }
-        if (event === 'right') {
-            return this.handleKeyupRight();
-        }
-        if (event === 'aimUp') {
-            return this.handleKeyupAimUp();
-        }
-        if (event === 'aimDown') {
-            return this.handleKeyupAimDown();
-        }
-        if (event === 'aimLeft') {
-            return this.handleKeyupAimLeft();
-        }
-        if (event === 'aimRight') {
-            return this.handleKeyupAimRight();
-        }
-        if (event === 'shoot') {
-            return this.handleKeyupShoot();
-        }
-        if (event === 'reload') {
-            return this.handleKeyupReload();
-        }
+
+const event = this.keybindings[e.key.toUpperCase()];
+if (!event) return;
+
+switch (event) {
+    case 'up':
+        return this.handleKeyupUp();
+    case 'down':
+        return this.handleKeyupDown();
+    case 'left':
+        return this.handleKeyupLeft();
+    case 'right':
+        return this.handleKeyupRight();
+    case 'aimUp':
+        return this.handleKeyupAimUp();
+    case 'aimDown':
+        return this.handleKeyupAimDown();
+    case 'aimLeft':
+        return this.handleKeyupAimLeft();
+    case 'aimRight':
+        return this.handleKeyupAimRight();
+    case 'shoot':
+        return this.handleKeyupShoot();
+    case 'reload':
+        return this.handleKeyupReload();
+    case 'nextWeapon': return;
+    case 'prevWeapon': return;
+    default:
         console.error('Unhandled keyboard event', event);
+}
     }
 
     handleKeydown(e: KeyboardEvent): void {
         e.preventDefault();
-        const event = this.keybindings[e.key.toUpperCase()];
-        if (!event) {
-            return;
-        }
-        if (event === 'up') {
-            return this.handleKeydownUp();
-        }
-        if (event === 'down') {
-            return this.handleKeydownDown();
-        }
-        if (event === 'left') {
-            return this.handleKeydownLeft();
-        }
-        if (event === 'right') {
-            return this.handleKeydownRight();
-        }
-        if (event === 'aimUp') {
-            return this.handleKeydownAimUp();
-        }
-        if (event === 'aimDown') {
-            return this.handleKeydownAimDown();
-        }
-        if (event === 'aimLeft') {
-            return this.handleKeydownAimLeft();
-        }
-        if (event === 'aimRight') {
-            return this.handleKeydownAimRight();
-        }
-        if (event === 'shoot') {
-            return this.handleKeydownShoot();
-        }
-        if (event === 'reload') {
-            return this.handleKeydownReload();
-        }
-        if (event === 'nextWeapon') {
-            return this.handleKeydownNextWeapon();
-        }
-        if (event === 'prevWeapon') {
-            return this.handleKeydownPrevWeapon();
-        }
+
+const event = this.keybindings[e.key.toUpperCase()];
+if (!event) return;
+
+switch (event) {
+    case 'up':
+        return this.handleKeydownUp();
+    case 'down':
+        return this.handleKeydownDown();
+    case 'left':
+        return this.handleKeydownLeft();
+    case 'right':
+        return this.handleKeydownRight();
+    case 'aimUp':
+        return this.handleKeydownAimUp();
+    case 'aimDown':
+        return this.handleKeydownAimDown();
+    case 'aimLeft':
+        return this.handleKeydownAimLeft();
+    case 'aimRight':
+        return this.handleKeydownAimRight();
+    case 'shoot':
+        return this.handleKeydownShoot();
+    case 'reload':
+        return this.handleKeydownReload();
+    case 'nextWeapon':
+        return this.handleKeydownNextWeapon();
+    case 'prevWeapon':
+        return this.handleKeydownPrevWeapon();
+    default:
         console.error('Unhandled keyboard event', event);
+}
     }
 
     isAiming(): boolean {
@@ -240,10 +227,12 @@ export default class InputManager {
     }
 
     handleKeydownReload(): void {
-        this.state.reload = true;
+        this.inputState.reload = true;
+        this.addSnapshot();
     }
     handleKeyupReload(): void {
-        this.state.reload = false;
+        this.inputState.reload = false;
+        this.addSnapshot();
     }
 
     handleKeydownNextWeapon(): void {

@@ -96,8 +96,8 @@ export const ComponentSchemas = {
 
     Ammo: z.object({
         current: z.number().int().nonnegative(),
-        total: z.number().int().nonnegative(),
-        max: z.number().int().nonnegative(),
+        total: z.number().int().nonnegative().or(z.literal('inf')),
+        max: z.number().int().nonnegative().or(z.literal('inf')),
         clipSize: z.number().int().nonnegative(),
     }), //TODO: set dynamic minmax
     AttackRange: z.object({ px: z.number() }), //TODO: set minmax
@@ -190,6 +190,7 @@ export const GameEventSchemas = {
     }),
 };
 
+export type GameEntities = z.infer<typeof GameEntitiesSchema>;
 export type Radian = z.infer<typeof radSchema>;
 export type SpawnBulletReq = z.infer<typeof spawnBulletReq>;
 export type SpawnPlayerReq = z.infer<typeof spawnPlayerReq>;
