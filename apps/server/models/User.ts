@@ -54,27 +54,42 @@ const KeybindingsSchema = new mongoose.Schema<Keybindings>(
         aimUp: {
             type: String,
             required: true,
-            default: 'ArrowUp',
+            default: 'ARROWUP',
         },
         aimDown: {
             type: String,
             required: true,
-            default: 'ArrowDown',
+            default: 'ARROWDOWN',
         },
         aimLeft: {
             type: String,
             required: true,
-            default: 'ArrowLeft',
+            default: 'ARROWLEFT',
         },
         aimRight: {
             type: String,
             required: true,
-            default: 'Arrowright',
+            default: 'ARROWRIGHT',
         },
         shoot: {
             type: String,
             required: true,
             default: ' ',
+        },
+        reload: {
+            type: String,
+            required: true,
+            default: 'R',
+        },
+        nextWeapon: {
+            type: String,
+            required: true,
+            default: 'E',
+        },
+        prevWeapon: {
+            type: String,
+            required: true,
+            defaul: 'Q',
         },
     },
     { _id: false },

@@ -1,0 +1,275 @@
+{
+	"frames": {
+	  "zombie1": {
+		"frame": {
+		  "x": 3,
+		  "y": 2,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 3,
+		  "y": 2,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie2": {
+		"frame": {
+		  "x": 49,
+		  "y": 2,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 49,
+		  "y": 2,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie3": {
+		"frame": {
+		  "x": 95,
+		  "y": 2,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 95,
+		  "y": 2,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie4": {
+		"frame": {
+		  "x": 3,
+		  "y": 37,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 3,
+		  "y": 37,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie5": {
+		"frame": {
+		  "x": 49,
+		  "y": 37,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 49,
+		  "y": 37,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie6": {
+		"frame": {
+		  "x": 95,
+		  "y": 37,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 95,
+		  "y": 37,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie7": {
+		"frame": {
+		  "x": 3,
+		  "y": 72,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 3,
+		  "y": 72,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie8": {
+		"frame": {
+		  "x": 49,
+		  "y": 72,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 49,
+		  "y": 72,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie9": {
+		"frame": {
+		  "x": 95,
+		  "y": 72,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 95,
+		  "y": 72,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie10": {
+		"frame": {
+		  "x": 3,
+		  "y": 107,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 3,
+		  "y": 107,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie11": {
+		"frame": {
+		  "x": 49,
+		  "y": 107,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 49,
+		  "y": 107,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  },
+	  "zombie12": {
+		"frame": {
+		  "x": 95,
+		  "y": 107,
+		  "w": 27,
+		  "h": 34
+		},
+		"sourceSize": {
+		  "x": 95,
+		  "y": 107,
+		  "w": 27,
+		  "h": 34
+		},
+		"spriteSourceSize": {
+		  "x": 0,
+		  "y": 0,
+		  "w": 27,
+		  "h": 34
+		}
+	  }
+	},
+	"meta": {
+	  "image": "2ZombieSpriteSheet.png",
+	  "format": "RGBA8888",
+	  "size": {
+		"w": 124,
+		"h": 144
+	  },
+	  "scale": 1
+	},
+	"animations": {
+	  "down": [
+		"zombie1",
+		"zombie2",
+		"zombie3"
+	  ],
+	  "right": [
+		"zombie4",
+		"zombie5",
+		"zombie6"
+	  ],
+	  "up": [
+		"zombie7",
+		"zombie8",
+		"zombie9"
+	  ],
+	  "left": [
+		"zombie10",
+		"zombie11",
+		"zombie12"
+	  ]
+	}
+  }

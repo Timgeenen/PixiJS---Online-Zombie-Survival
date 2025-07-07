@@ -7,10 +7,10 @@ import {
     type SoloLobbySettings,
 } from '@monorepo/shared';
 import type { DBLobby } from '@Types/db';
+import logger from '@Utils/logger';
 import bcrypt from 'bcryptjs';
 import { removeLobbyById } from 'services/lobbyService';
 import { ServerMultiplayerLobby, ServerSoloLobby, type ServerLobby } from './classes/Lobby';
-import logger from '@Utils/logger';
 
 export function validateLobbySettings(
     settings: LobbySettings,

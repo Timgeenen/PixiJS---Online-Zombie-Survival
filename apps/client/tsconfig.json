@@ -35,7 +35,7 @@
       "@Services": ["src/services/index.ts"],
       "@Store": ["src/store/index.ts"],
       "@Types": ["src/types/index.ts"],
-      "@Utils": ["src/utils/index.ts"],
+      "@Utils": ["src/features/game/utils/index.ts"],
     }
   }
 }

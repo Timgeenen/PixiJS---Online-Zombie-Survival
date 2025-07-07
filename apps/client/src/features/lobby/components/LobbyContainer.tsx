@@ -18,7 +18,8 @@ function LobbyContainer() {
         if (!socket?.connected || !lobby_id) return;
         joinLobby(lobby_id);
         return () => {
-            leaveLobby(lobby_id);
+            //TODO: only remove if game is not being started
+            // leaveLobby(lobby_id);
         };
     }, [socket?.connected, lobby_id]);
 

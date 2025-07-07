@@ -28,5 +28,5 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true
   },
-  "include": ["src"]
+  "include": ["src", "../../packages/shared/systems/FireControlSystem.ts"]
 }

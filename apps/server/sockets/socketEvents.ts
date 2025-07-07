@@ -19,7 +19,7 @@ import { findUserById } from 'services/userService';
 import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
 import type LobbyMap from './lobbyMap';
-import { getLobbyId, getUserId, removeLobbyId, setLobbyId } from './socketData';
+import { getLobbyId, getUserId, setLobbyId } from './socketData';
 import {
     handleCreateLobby,
     hashLobbyPassword,
@@ -28,6 +28,8 @@ import {
     isSoloLobby,
     validateLobbySettings,
 } from './socketEventHelpers';
+import type { GameMap } from './gameMap';
+import { createGameInstance } from './gameHandlers';
 
 export function createCreateNewSocketLobby(
     socket: Socket,
@@ -194,7 +196,12 @@ export function createLeaveSocketLobbyList(socket: Socket): () => void {
     };
 }
 
-export function createStartLobby(socket: Socket, io: Server, lobbyMap: LobbyMap): () => void {
+export function createStartLobby(
+    socket: Socket,
+    io: Server,
+    lobbyMap: LobbyMap,
+    gameMap: GameMap,
+): () => void {
     return () => {
         logger.info('Starting lobby');
         const lobby_id = getLobbyId(socket);
@@ -210,6 +217,7 @@ export function createStartLobby(socket: Socket, io: Server, lobbyMap: LobbyMap)
             throw new SocketConflictError('Could not start lobby: players not ready');
         }
         lobby.startLobby(user_id);
+        createGameInstance(lobby, gameMap);
         io.to(lobby_id).emit('start_lobby', lobby_id);
         logger.info('Start lobby success');
     };

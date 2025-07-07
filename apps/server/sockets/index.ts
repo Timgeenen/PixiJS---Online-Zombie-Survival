@@ -15,10 +15,18 @@ import {
 } from './socketEvents';
 import { getUserId } from './socketData';
 import { SocketAuthError } from '@Errors/customSocketErrors';
+import type { GameMap } from './gameMap';
+import { createInitializeGame } from './gameEvents';
 
 const socketOptions = {
     cors: {
-        origin: '*',
+        origin: [
+            process.env.NODE_ENV === 'production'
+                ? process.env.CLIENT_URL
+                : process.env.CLIENT_LOCALHOST,
+            'http://192.168.0.165:5500',
+            'http://192.168.0.179:5500',
+        ],
         credentials: true,
     },
 } as ServerOptions;
@@ -26,12 +34,14 @@ const socketOptions = {
 export class SocketInstance {
     private io: Server;
     lobbyMap: LobbyMap;
+    gameMap: GameMap;
     userSet: Set<string>;
 
     constructor(httpServer: HttpServer) {
         this.io = new Server(httpServer, socketOptions);
         this.io.use(errorCatcher(authMiddleware));
         this.lobbyMap = new LobbyMap();
+        this.gameMap = new Map();
         this.userSet = new Set();
     }
 
@@ -46,7 +56,7 @@ export class SocketInstance {
             socket.join(user_id);
             this.userSet.add(user_id);
             logger.info('connected to main socket');
-            this.initListenerEvents(socket, this.lobbyMap);
+            this.initListenerEvents(socket);
             socket.on('disconnect', (reason) => {
                 logger.info(`Socket disconnected: ${reason}`);
                 errorCatcher(() => this.handleCleanup(socket))();
@@ -54,17 +64,29 @@ export class SocketInstance {
         });
     }
 
-    private initListenerEvents(socket: Socket, lobbyMap: LobbyMap) {
+    private initListenerEvents(socket: Socket) {
         //lobby listener events
-        socket.on('create_new_lobby', errorCatcher(createCreateNewSocketLobby(socket, lobbyMap)));
-        socket.on('join_lobby', errorCatcher(createJoinSocketLobby(socket, lobbyMap)));
-        socket.on('leave_lobby', errorCatcher(createLeaveSocketLobby(socket, lobbyMap)));
-        socket.on('player_ready', errorCatcher(createSetPlayerReady(socket, lobbyMap)));
-        socket.on('start_lobby', errorCatcher(createStartLobby(socket, this.io, lobbyMap)));
+        socket.on(
+            'create_new_lobby',
+            errorCatcher(createCreateNewSocketLobby(socket, this.lobbyMap)),
+        );
+        socket.on('join_lobby', errorCatcher(createJoinSocketLobby(socket, this.lobbyMap)));
+        socket.on('leave_lobby', errorCatcher(createLeaveSocketLobby(socket, this.lobbyMap)));
+        socket.on('player_ready', errorCatcher(createSetPlayerReady(socket, this.lobbyMap)));
+        socket.on(
+            'start_lobby',
+            errorCatcher(createStartLobby(socket, this.io, this.lobbyMap, this.gameMap)),
+        );
 
-        //lobby list listener events
-        socket.on('join_lobby_list', errorCatcher(createJoinSocketLobbyList(socket, lobbyMap)));
+        //lobbyList listener eventsthis.
+        socket.on(
+            'join_lobby_list',
+            errorCatcher(createJoinSocketLobbyList(socket, this.lobbyMap)),
+        );
         socket.on('leave_lobby_list', errorCatcher(createLeaveSocketLobbyList(socket)));
+
+        //game listener events
+        socket.on('initialize_game', errorCatcher(createInitializeGame(socket, this.gameMap)));
     }
 
     private handleCleanup(socket: Socket) {

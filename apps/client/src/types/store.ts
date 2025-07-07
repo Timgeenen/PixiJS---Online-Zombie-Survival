@@ -61,3 +61,7 @@ export interface LobbyActions {
     reset: () => void;
 }
 export type LobbyStore = LobbyActions & LobbyState;
+
+export type GameStore = GameActions & GameState;
+export interface GameActions {}
+export interface GameState {}

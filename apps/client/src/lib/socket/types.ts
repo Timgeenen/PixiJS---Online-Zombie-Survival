@@ -1,4 +1,5 @@
 import type {
+    GameState,
     JoinLobbyData,
     LobbyData,
     LobbyList,
@@ -11,7 +12,7 @@ import type {
 export type SocketEvents<T> = {
     [K in keyof T]: T[K];
 };
-export type ListenerEvents = StandardListenerEvents & LobbyListenerEvents;
+export type ListenerEvents = StandardListenerEvents & LobbyListenerEvents & GameListenerEvents;
 
 export interface StandardListenerEvents {
     connect: () => void;
@@ -34,7 +35,15 @@ export interface LobbyListListenerEvents {
     start_lobby: (lobby_id: string) => void;
 }
 
-export interface EmitEvents {
+export type EmitEvents = GameEmitEvents & LobbyEmitEvents;
+
+export interface GameEmitEvents {
+    initialize_game: (callback: (response: SocketResponse<GameState>) => void) => void;
+}
+
+export interface GameListenerEvents {}
+
+export interface LobbyEmitEvents {
     start_lobby: () => void;
     join_lobby_list: (callback: (response: SocketResponse<LobbyList>) => void) => void;
     leave_lobby_list: () => void;
