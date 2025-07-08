@@ -16,6 +16,7 @@ export default function createBullet<G extends Game>(
         Owner: { entity: data.owner },
         Position: data.position,
         Velocity: getVelocity(data.aim),
+        Rotation: { rad: data.aim },
         ...bulletBaseTemplate,
         ...bulletTemplate,
         ...extra,

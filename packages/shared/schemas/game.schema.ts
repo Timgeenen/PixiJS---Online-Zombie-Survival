@@ -23,7 +23,6 @@ export const radSchema = z
 export const tickSchema = z.number().int().min(0).nonnegative();
 export const inputSnapshotSchema = z.object({
     seq: z.number().int().min(0).nonnegative(),
-    dt: z.number().nonnegative(),
     mx: z.number().min(-1).max(1),
     my: z.number().min(-1).max(1),
     shoot: z.number().int().min(0).max(1),

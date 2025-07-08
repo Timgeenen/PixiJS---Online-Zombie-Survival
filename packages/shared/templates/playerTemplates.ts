@@ -26,7 +26,7 @@ export const PlayerTemplates: Record<PlayerType, EntityTemplate> = {
             max: 100,
         },
         Rotation: {
-            rad: Math.PI,
+            rad: 0,
         },
     },
 };

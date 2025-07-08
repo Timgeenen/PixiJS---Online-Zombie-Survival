@@ -5,6 +5,7 @@ import InputManager from './inputManager';
 
 export default class ClientGame extends Game {
     private entityId = 9000000;
+    justRotatedMap: Map<Entity, {}>;
 
     public readonly player_entity: Entity;
     public readonly player_id: string;
@@ -15,6 +16,7 @@ export default class ClientGame extends Game {
         this.player_id = player_id;
         this.player_entity = this.getPlayerEntity(player_id);
         this.systems = new ClientGameSystems(this, inputManager, app);
+        this.justRotatedMap = new Map();
         for (const [e, _] of this.playerMap) {
             this.queues.justSpawned.push({ entity: e});
         }

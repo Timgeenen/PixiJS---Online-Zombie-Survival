@@ -28,8 +28,11 @@ const bullets: AssetsBundle = {
     name: 'bullets',
     assets: {
         pistol: {
-            src: getAssetUrl('shotgun_bullet.png'),
+            src: getAssetUrl('pistol_bullet.png'),
         },
+        shotgun: {
+            src: getAssetUrl('shotgun_bullet.png'),
+        }
     },
 };
 

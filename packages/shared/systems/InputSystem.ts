@@ -1,5 +1,5 @@
 import type { Game } from '../core';
-import type { Entity, InputSnapshot, InputState } from '../schemas';
+import type { ComponentData, Entity, InputSnapshot, InputState, Radian } from '../schemas';
 import System from './System';
 
 export default class InputSystem<G extends Game> extends System {
@@ -17,11 +17,15 @@ export default class InputSystem<G extends Game> extends System {
             }
             const inputState = this.getInputState(snapQueue, entity);
             const { mx, my, aim } = inputState;
+            this.handleRotation(entity, aim);
             this.game.updateComponent(entity, 'InputState', inputState);
             this.game.updateComponent(entity, 'Velocity', { vx: mx, vy: my });
-            this.game.updateComponent(entity, 'Rotation', { rad: aim });
             this.snapshots.set(entity, []);
         }
+    }
+
+    handleRotation(entity: Entity, aim: Radian) {
+        this.game.updateComponent(entity, 'Rotation', { rad: aim });
     }
 
     private getInputState(queue: InputSnapshot[], entity: Entity): InputState {

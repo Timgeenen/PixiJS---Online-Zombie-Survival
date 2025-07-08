@@ -52,7 +52,6 @@ export default class InputManager {
         aimRight: false,
         shoot: false,
     };
-    private lastSnapshot = performance.now();
     queue: InputSnapshot[];
 
     constructor(
@@ -100,16 +99,12 @@ export default class InputManager {
         if (this.prevInputState && this.prevInputState === inputState) {
             return;
         }
-        const now = performance.now();
-        const dt = now - this.lastSnapshot;
-        this.lastSnapshot = now;
         const {aimLeft, aimRight, aimUp, aimDown, left, right, up, down} = this.inputState;
         const aimRadian = this.getRadian(aimLeft, aimRight, aimUp, aimDown);
         const walkRadian = this.getRadian(left, right, up, down);
         const { mx, my } = this.getMovement(walkRadian);
         const snapshot = {
             seq: this.seq++,
-            dt,
             mx,
             my,
             shoot: this.inputState.shoot ? 1 : 0,

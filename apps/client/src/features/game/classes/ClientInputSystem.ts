@@ -1,6 +1,7 @@
 import { InputSystem } from '@monorepo/shared/systems';
 import ClientGame from './ClientGame';
 import InputManager from './inputManager';
+import type { ComponentData, Entity, Radian } from '@monorepo/shared';
 
 export default class ClientInputSystem extends InputSystem<ClientGame> {
     constructor(
@@ -24,5 +25,14 @@ export default class ClientInputSystem extends InputSystem<ClientGame> {
             return [];
         }
         this.snapshots.set(this.game.player_entity, queue);
+    }
+
+    override handleRotation(entity: Entity, aim: Radian): void {
+        const rotation = this.game.rotationMap.get(entity);
+        if (rotation && rotation.rad !== aim) {
+            this.game.justRotatedMap.set(entity, {});
+        }
+        this.game.rotationMap.set(entity, { rad: aim })
+        return
     }
 }
