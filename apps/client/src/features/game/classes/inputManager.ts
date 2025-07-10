@@ -52,7 +52,7 @@ export default class InputManager {
         aimRight: false,
         shoot: false,
     };
-    queue: InputSnapshot[];
+    queue: Omit<InputSnapshot, 'tick'>[];
 
     constructor(
         keybindings: Keybindings,
@@ -78,7 +78,7 @@ export default class InputManager {
         window.removeEventListener('keyup', this.onKeyUp);
     }
 
-    drain(): InputSnapshot[] {
+    drain(): Omit<InputSnapshot, 'tick'>[] {
         const inputs = this.queue;
         this.queue = [];
         return inputs;
@@ -104,7 +104,6 @@ export default class InputManager {
         const walkRadian = this.getRadian(left, right, up, down);
         const { mx, my } = this.getMovement(walkRadian);
         const snapshot = {
-            seq: this.seq++,
             mx,
             my,
             shoot: this.inputState.shoot ? 1 : 0,

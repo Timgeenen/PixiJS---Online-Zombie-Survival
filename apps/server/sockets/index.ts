@@ -16,7 +16,7 @@ import {
 import { getUserId } from './socketData';
 import { SocketAuthError } from '@Errors/customSocketErrors';
 import type { GameMap } from './gameMap';
-import { createInitializeGame } from './gameEvents';
+import { createGameReady, createInitializeGame, createPing, createUpdateGame } from './gameEvents';
 
 const socketOptions = {
     cors: {
@@ -87,6 +87,9 @@ export class SocketInstance {
 
         //game listener events
         socket.on('initialize_game', errorCatcher(createInitializeGame(socket, this.gameMap)));
+        socket.on('game_player_ready', errorCatcher(createGameReady(socket, this.io, this.gameMap)));
+        socket.on('game_update', errorCatcher(createUpdateGame(socket, this.gameMap)));
+        socket.on('ping', errorCatcher(createPing(socket, this.gameMap)));
     }
 
     private handleCleanup(socket: Socket) {

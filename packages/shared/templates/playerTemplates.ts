@@ -15,7 +15,7 @@ export const PlayerBaseTemplate: PlayerBaseTemplateType = {
         offsetX: -16,
         offsetY: -16,
     },
-    Speed: { px: 1 },
+    Speed: { px: 5 },
     Velocity: { vx: 0, vy: 0 },
 };
 

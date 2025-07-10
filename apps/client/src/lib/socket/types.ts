@@ -1,4 +1,5 @@
 import type {
+    ClientData,
     GameState,
     JoinLobbyData,
     LobbyData,
@@ -6,6 +7,7 @@ import type {
     LobbyListData,
     LobbySettings,
     PublicLobbyProfile,
+    ServerTickData,
     SocketResponse,
 } from '@monorepo/shared';
 
@@ -38,10 +40,16 @@ export interface LobbyListListenerEvents {
 export type EmitEvents = GameEmitEvents & LobbyEmitEvents;
 
 export interface GameEmitEvents {
+    game_player_ready: (callback: (response: SocketResponse<void>) => void ) => void
     initialize_game: (callback: (response: SocketResponse<GameState>) => void) => void;
+    game_update: (data: ClientData) => void;
+    ping: (callback: (response: SocketResponse<ServerTickData>) => void) => void;
 }
 
-export interface GameListenerEvents {}
+export interface GameListenerEvents {
+    game_update: (gameState: GameState) => void;
+    game_start: (gameData: ServerTickData) => void;
+}
 
 export interface LobbyEmitEvents {
     start_lobby: () => void;

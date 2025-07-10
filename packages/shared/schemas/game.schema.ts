@@ -22,7 +22,7 @@ export const radSchema = z
     .max(Math.PI * 2);
 export const tickSchema = z.number().int().min(0).nonnegative();
 export const inputSnapshotSchema = z.object({
-    seq: z.number().int().min(0).nonnegative(),
+    tick: tickSchema,
     mx: z.number().min(-1).max(1),
     my: z.number().min(-1).max(1),
     shoot: z.number().int().min(0).max(1),
@@ -188,6 +188,13 @@ export const GameEventSchemas = {
         index: z.number().int().optional(),
     }),
 };
+export const clientDataSchema = z.object({
+    snapshots: z.array(inputSnapshotSchema)
+});
+export const serverTickDataSchema = z.object({
+    tick: tickSchema,
+    serverTimeMs: z.number().int().nonnegative(),
+})
 
 export type GameEntities = z.infer<typeof GameEntitiesSchema>;
 export type Radian = z.infer<typeof radSchema>;
@@ -213,6 +220,9 @@ export type EntityTemplate = Partial<{
 export type GameSystem = (game: Game, delta: number) => void;
 export type InputSnapshot = z.infer<typeof inputSnapshotSchema>;
 export type InputState = z.infer<typeof inputStateSchema>;
+export type ClientData = z.infer<typeof clientDataSchema>;
+export type ServerTickData = z.infer<typeof serverTickDataSchema>;
+export type Tick = z.infer<typeof tickSchema>;
 // {
 //   [K in keyof typeof ComponentSchemas]?: Record<Entity, ZodToType<(typeof ComponentSchemas)[K]>>
 // };

@@ -1,3 +1,4 @@
+import { TICK } from '../constants';
 import {
     ComponentSchemas,
     GameEventSchemas,
@@ -15,54 +16,55 @@ type GameEventQueues = { [K in GameEventType]: GameEvent<K>[] };
 
 export abstract class Game {
     [key: string]: any;
-    currentTick: number;
-    playerMap!: Map<Entity, ComponentData<'Player'>>;
+    public readonly tickDt = TICK * 1000;
+    public currentTick: number;
+    public playerMap!: Map<Entity, ComponentData<'Player'>>;
     // playerEntityMap!: Map<string, Entity>;
-    inputStateMap!: Map<Entity, InputState>;
-    queues: GameEventQueues;
+    public inputStateMap!: Map<Entity, InputState>;
+    public queues: GameEventQueues;
 
-    nextPositionMap!: Map<Entity, ComponentData<'NextPosition'>>;
-    speedMap!: Map<Entity, ComponentData<'Speed'>>;
-    ammoMap!: Map<Entity, ComponentData<'Ammo'>>;
-    attackRangeMap!: Map<Entity, ComponentData<'AttackRange'>>;
+    public nextPositionMap!: Map<Entity, ComponentData<'NextPosition'>>;
+    public speedMap!: Map<Entity, ComponentData<'Speed'>>;
+    public ammoMap!: Map<Entity, ComponentData<'Ammo'>>;
+    public attackRangeMap!: Map<Entity, ComponentData<'AttackRange'>>;
     // cooldownMap!: Map<Entity, ComponentData<'Cooldown'>>;
-    damageMap!: Map<Entity, ComponentData<'Damage'>>;
     // durationMap!: Map<Entity, ComponentData<'Duration'>>;
-    fireRateMap!: Map<Entity, ComponentData<'FireRate'>>;
-    hitboxMap!: Map<Entity, ComponentData<'Hitbox'>>;
-    hpMap!: Map<Entity, ComponentData<'HP'>>;
-    lifetimeMap!: Map<Entity, ComponentData<'Lifetime'>>;
-    maxTravelDistanceMap!: Map<Entity, ComponentData<'MaxTravelDistance'>>;
-    positionMap!: Map<Entity, ComponentData<'Position'>>;
-    reloadSpeedMap!: Map<Entity, ComponentData<'ReloadSpeed'>>;
-    rotationMap!: Map<Entity, ComponentData<'Rotation'>>;
-    velocityMap!: Map<Entity, ComponentData<'Velocity'>>;
-    weaponRangeMap!: Map<Entity, ComponentData<'WeaponRange'>>;
-    currentWeaponMap!: Map<Entity, ComponentData<'CurrentWeapon'>>;
-    ownerMap!: Map<Entity, ComponentData<'Owner'>>;
-    targetMap!: Map<Entity, ComponentData<'Target'>>;
-    aiMap!: Map<Entity, ComponentData<'AI'>>;
-    entityTypeMap!: Map<Entity, ComponentData<'EntityType'>>;
-    enemyTypeMap!: Map<Entity, ComponentData<'EnemyType'>>;
-    attackTypeMap!: Map<Entity, ComponentData<'AttackType'>>;
-    ammoTypeMap!: Map<Entity, ComponentData<'AmmoType'>>;
-    itemTypeMap!: Map<Entity, ComponentData<'ItemType'>>;
-    createdAtMap!: Map<Entity, ComponentData<'CreatedAt'>>;
-    lastUpdatedAtMap!: Map<Entity, ComponentData<'LastUpdatedAt'>>;
-    isBulletMap!: Map<Entity, ComponentData<'IsBullet'>>;
-    isItemMap!: Map<Entity, ComponentData<'IsItem'>>;
-    isEnemyMap!: Map<Entity, ComponentData<'IsEnemy'>>;
-    isPickupMap!: Map<Entity, ComponentData<'IsPickup'>>;
-    isReloadingMap!: Map<Entity, ComponentData<'IsReloading'>>;
-    weaponInventoryMap!: Map<Entity, ComponentData<'WeaponInventory'>>;
+    public damageMap!: Map<Entity, ComponentData<'Damage'>>;
+    public fireRateMap!: Map<Entity, ComponentData<'FireRate'>>;
+    public hitboxMap!: Map<Entity, ComponentData<'Hitbox'>>;
+    public hpMap!: Map<Entity, ComponentData<'HP'>>;
+    public lifetimeMap!: Map<Entity, ComponentData<'Lifetime'>>;
+    public maxTravelDistanceMap!: Map<Entity, ComponentData<'MaxTravelDistance'>>;
+    public positionMap!: Map<Entity, ComponentData<'Position'>>;
+    public reloadSpeedMap!: Map<Entity, ComponentData<'ReloadSpeed'>>;
+    public rotationMap!: Map<Entity, ComponentData<'Rotation'>>;
+    public velocityMap!: Map<Entity, ComponentData<'Velocity'>>;
+    public weaponRangeMap!: Map<Entity, ComponentData<'WeaponRange'>>;
+    public currentWeaponMap!: Map<Entity, ComponentData<'CurrentWeapon'>>;
+    public ownerMap!: Map<Entity, ComponentData<'Owner'>>;
+    public targetMap!: Map<Entity, ComponentData<'Target'>>;
+    public aiMap!: Map<Entity, ComponentData<'AI'>>;
+    public entityTypeMap!: Map<Entity, ComponentData<'EntityType'>>;
+    public enemyTypeMap!: Map<Entity, ComponentData<'EnemyType'>>;
+    public attackTypeMap!: Map<Entity, ComponentData<'AttackType'>>;
+    public ammoTypeMap!: Map<Entity, ComponentData<'AmmoType'>>;
+    public itemTypeMap!: Map<Entity, ComponentData<'ItemType'>>;
+    public createdAtMap!: Map<Entity, ComponentData<'CreatedAt'>>;
+    public lastUpdatedAtMap!: Map<Entity, ComponentData<'LastUpdatedAt'>>;
+    public isBulletMap!: Map<Entity, ComponentData<'IsBullet'>>;
+    public isItemMap!: Map<Entity, ComponentData<'IsItem'>>;
+    public isEnemyMap!: Map<Entity, ComponentData<'IsEnemy'>>;
+    public isPickupMap!: Map<Entity, ComponentData<'IsPickup'>>;
+    public isReloadingMap!: Map<Entity, ComponentData<'IsReloading'>>;
+    public weaponInventoryMap!: Map<Entity, ComponentData<'WeaponInventory'>>;
 
     //cooldown maps
-    combatCooldownsMap!: Map<Entity, ComponentData<'CombatCooldowns'>>;
-    weaponCooldownsMap!: Map<Entity, ComponentData<'WeaponCooldowns'>>;
+    public combatCooldownsMap!: Map<Entity, ComponentData<'CombatCooldowns'>>;
+    public weaponCooldownsMap!: Map<Entity, ComponentData<'WeaponCooldowns'>>;
     // skillCooldownMap!: Map<Entity, ComponentData<'SkillCooldown'>>;
 
     //event maps
-    switchWeaponMap!: Map<Entity, ComponentData<'SwitchWeapon'>>;
+    public switchWeaponMap!: Map<Entity, ComponentData<'SwitchWeapon'>>;
 
     constructor(data: GameState) {
         for (const key of Object.keys(ComponentSchemas) as ComponentType[]) {
@@ -82,6 +84,19 @@ export abstract class Game {
             weaponDepleted: [],
             needsReload: [],
         };
+    }
+
+    getPlayerEntity(player_id: string): Entity {
+        let entity: Entity | null = null;
+        for (const [e, player] of this.playerMap) {
+            if (player._id === player_id) {
+                return entity = e;
+            }
+        }
+        if (!entity) {
+            throw new Error('Could not find player_id in entity map');
+        }
+        return entity
     }
 
     forgeTemplate(e: Entity, template: EntityTemplate) {

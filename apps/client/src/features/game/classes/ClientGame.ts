@@ -1,39 +1,41 @@
-import { Game, type Entity, type GameState } from '@monorepo/shared';
+import { ComponentSchemas, Game, TICK, type ClientData, type ComponentData, type Entity, type GameState, type ServerTickData } from '@monorepo/shared';
 import type { Application } from 'pixi.js';
 import ClientGameSystems from './ClientGameSystems';
 import InputManager from './inputManager';
+import type { ComponentType } from 'react';
 
 export default class ClientGame extends Game {
-    private entityId = 9000000;
-    justRotatedMap: Map<Entity, {}>;
-
     public readonly player_entity: Entity;
     public readonly player_id: string;
     public readonly systems: ClientGameSystems;
+    private clientData: ClientData = { snapshots: [] };
+    private entityId = 9000000;
+    public lastServerTick = 0;
+    public tickOffset = 0;
+    public tickZeroMs = 0;
+    public rtt = 0;
+
+    public justRotatedMap: Map<Entity, {}> = new Map();
+
 
     constructor(data: GameState, inputManager: InputManager, app: Application, player_id: string) {
         super(data);
         this.player_id = player_id;
         this.player_entity = this.getPlayerEntity(player_id);
         this.systems = new ClientGameSystems(this, inputManager, app);
-        this.justRotatedMap = new Map();
         for (const [e, _] of this.playerMap) {
             this.queues.justSpawned.push({ entity: e});
         }
     }
 
-    getPlayerEntity(player_id: string): Entity {
-        let entity: Entity | null = null;
-        for (const [e, player] of this.playerMap) {
-            if (player._id === player_id) {
-                return entity = e;
-            }
-        }
-        if (!entity) {
-            throw new Error('Could not find player_id in entity map');
-        }
-        return entity
-    }
+    // public gameLoop(currentTime: number): void {
+    //     const serverTick = this.predictServerTick();
+    //     const idealClientTick = serverTick - this.tickOffset;
+    //     while (this.currentTick < idealClientTick) {
+    //         this.update(TICK)
+    //     }
+    //     requestAnimationFrame(this.gameLoop);
+    // }
 
     override createEntity(): Entity {
         const entity = this.entityId++;
@@ -41,7 +43,30 @@ export default class ClientGame extends Game {
         return entity;
     }
 
-    public update(dt: number) {
+    public updateClient(data: GameState): void {
+        const position = data.Position;
+        if (position) {
+            console.log('LOCAL', this.positionMap.get(this.player_entity))
+            console.log('SERVER', position[this.player_entity])
+        }
+    }
+
+    public startGameLoop(data: ServerTickData): void {
+        const nowClient = performance.now();
+        const timeDiff = Date.now() - data.serverTimeMs;
+        this.tickZeroMs = nowClient - timeDiff;
+    }
+
+    public setTickData(data: ServerTickData): void {
+        this.lastServerTick = data.tick
+        this.tickOffset = this.currentTick - data.tick
+    }
+
+    public predictServerTick(): number {
+        return Math.floor((performance.now() - this.tickZeroMs) / this.tickDt);
+    }
+
+    public update(dt: number): ClientData {
         this.currentTick++
         this.systems.inputSystem.update(dt);
         this.systems.weaponSwitchSystem.update(dt)
@@ -53,5 +78,6 @@ export default class ClientGame extends Game {
         this.systems.movementCommitSystem.update(dt);
         this.systems.spawnSystem.update(dt);
         this.systems.renderSystem.update(dt);
+        return this.clientData;
     }
 }

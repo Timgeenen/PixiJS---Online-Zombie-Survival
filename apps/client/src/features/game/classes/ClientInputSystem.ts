@@ -1,7 +1,7 @@
+import type { Entity, Radian } from '@monorepo/shared';
 import { InputSystem } from '@monorepo/shared/systems';
 import ClientGame from './ClientGame';
 import InputManager from './inputManager';
-import type { ComponentData, Entity, Radian } from '@monorepo/shared';
 
 export default class ClientInputSystem extends InputSystem<ClientGame> {
     constructor(
@@ -19,12 +19,14 @@ export default class ClientInputSystem extends InputSystem<ClientGame> {
         //run root update function to process snapshots
     }
 
-    private updateSnapshotQueue() {
+    private updateSnapshotQueue(): void {
         const queue = this.inputManager.drain();
+        const q = queue.map(snap => { return { ...snap, tick: this.game.currentTick }});
+        this.game.clientData.snapshots = q;
         if (queue.length === 0) {
-            return [];
+            return;
         }
-        this.snapshots.set(this.game.player_entity, queue);
+        this.snapshots.set(this.game.player_entity, q);
     }
 
     override handleRotation(entity: Entity, aim: Radian): void {

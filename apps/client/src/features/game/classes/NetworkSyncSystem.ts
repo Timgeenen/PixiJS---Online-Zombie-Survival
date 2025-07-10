@@ -1,12 +1,13 @@
+import { System } from '@monorepo/shared';
 import { useSocketStore } from '@Store';
+import type ClientGame from './ClientGame';
 
-export default class NetworkSyncSystem {
-    constructor() {}
+export default class NetworkSyncSystem extends System {
+    constructor(protected game: ClientGame) {
+        super()
+    }
 
-    register() {
-        const { socket } = useSocketStore.getState();
-        if (!socket?.connected) {
-            throw new Error('Could not register network sync system: socket not connected');
-        }
+    override update(dt: number): void {
+        
     }
 }

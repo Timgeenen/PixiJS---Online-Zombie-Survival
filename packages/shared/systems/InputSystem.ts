@@ -1,19 +1,23 @@
 import type { Game } from '../core';
-import type { ComponentData, Entity, InputSnapshot, InputState, Radian } from '../schemas';
+import type { Entity, InputSnapshot, InputState, Radian } from '../schemas';
 import System from './System';
 
 export default class InputSystem<G extends Game> extends System {
-    protected snapshots: Map<Entity, InputSnapshot[]>;
+    snapshots: Map<Entity, InputSnapshot[]>;
 
     constructor(protected game: G) {
         super();
         this.snapshots = new Map();
     }
 
+    override update(dt: number): void {
+        this._rootUpdate(dt);
+    }
+
     protected _rootUpdate(dt: number) {
         for (const [entity, snapQueue] of this.snapshots) {
             if (snapQueue.length === 0) {
-                return;
+                continue;
             }
             const inputState = this.getInputState(snapQueue, entity);
             const { mx, my, aim } = inputState;
@@ -33,6 +37,7 @@ export default class InputSystem<G extends Game> extends System {
         let reload = 0;
         let changeWeapon = 0;
         for (const snap of queue) {
+            if (snap.tick < this.game.currentTick) { break }
             changeWeapon += snap.changeWeapon;
             if (snap.reload === 1 && reload === 0) {
                 reload = 1;

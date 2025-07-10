@@ -10,7 +10,7 @@ export const bulletBaseTemplate: bulletBaseTemplate = {
 
 export const bulletTemplates: Record<AmmoType, EntityTemplate> = {
     pistol: {
-        Speed: { px: 12.5 },
+        Speed: { px: 40 },
         Hitbox: { width: 10, height: 4, offsetX: 5, offsetY: 2 },
         Lifetime: { ticks: 60 },
         Damage: { amount: 10 },

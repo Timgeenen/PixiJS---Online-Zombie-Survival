@@ -7,7 +7,7 @@ export default class ServerInputSystem extends InputSystem<ServerGame> {
     }
 
     override update(dt: number) {
-        //set snapshot queue based on received snapshots
+        //set snapshot queues based on received snapshots
         //run root update to process snapshots
     }
 

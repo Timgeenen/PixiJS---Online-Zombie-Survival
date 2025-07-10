@@ -1,6 +1,5 @@
-import { Application, Assets, Particle, ParticleContainer } from 'pixi.js';
+import { Application, Assets } from 'pixi.js';
 import { useCallback, useEffect, type Dispatch, type SetStateAction } from 'react';
-import { getSprite } from '../utils/gameHelpers';
 import { manifest } from '../data/manifest';
 
 type Props = {
@@ -28,39 +27,8 @@ function useCreateApp({ appRef, canvasRef, setAppCreated }: Props): void {
         app.resizeTo = window;
         appRef.current = app;
         canvas?.appendChild(app.canvas);
-        //init asset manifest
-        //load bundles
         await Assets.init({ manifest });
         await Assets.loadBundle(['bullets', 'players']);
-        //   const container = new ParticleContainer({
-        //     dynamicProperties: {
-        //         scale: false,
-        //         position: true,
-        //         rotation: true,
-        //         uvs: false,
-        //         alpha: false,
-        //     }
-        //   })
-        //   const bullet = Assets.get('shotgun_bullet');
-        //   window.addEventListener('keydown', () => {
-        //     for (let i = 0; i < 100; i++) {
-        //         const particle = new Particle({
-        //             texture: bullet,
-        //             x: Math.random() * window.innerWidth,
-        //             y: Math.random() * window.innerHeight,
-        //             rotation: Math.PI * Math.random()
-        //         })
-        //         container.addParticle(particle)
-        //     }
-        //     app.stage.addChild(container)
-        //   bullet.x = Math.random() * window.innerWidth;
-        //   bullet.y = Math.random() * window.innerHeight;
-        //   app.ticker.add(() => {
-        //     bullet.x += Math.random() * 10
-        //     bullet.y += Math.random() * 10
-        //   })
-        //   app.stage.addChild(bullet)
-        //   })
         setAppCreated(true);
         return app;
     }, []);

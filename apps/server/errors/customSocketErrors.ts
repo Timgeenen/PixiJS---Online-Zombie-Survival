@@ -21,6 +21,15 @@ export class SocketError extends Error {
     }
 }
 
+export class SocketBadRequestError extends SocketError {
+    constructor(logErrorMessage: string, options?: ErrorOptions) {
+        super(logErrorMessage, options);
+        this.status = 404;
+        this.clientMessage = options?.clientMessage ?? '400: Bad Request error';
+        this.callback = options?.callback;
+    }
+}
+
 export class SocketAuthError extends SocketError {
     constructor(logErrorMessage: string, options?: ErrorOptions) {
         super(logErrorMessage, options);

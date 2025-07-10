@@ -1,5 +1,5 @@
 import { SocketAuthError } from '@Errors/customSocketErrors';
-import logger from '@Utils/logger';
+import type { Entity } from '@monorepo/shared';
 import type { Socket } from 'socket.io';
 
 export function setUserId(socket: Socket, user_id: string): void {
@@ -34,4 +34,16 @@ export function getLobbyId(socket: Socket): string {
 
 export function removeLobbyId(socket: Socket): void {
     delete socket.data.lobby_id;
+}
+
+export function setPlayerEntity(socket: Socket, entity: Entity): void {
+    socket.data.player_entity = entity;
+}
+
+export function getPlayerEntity(socket: Socket): Entity {
+    return socket.data.player_entity;
+}
+
+export function removePlayerEntity(socket: Socket): void {
+    delete socket.data.player_entity;
 }

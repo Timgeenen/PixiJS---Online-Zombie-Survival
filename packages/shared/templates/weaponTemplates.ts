@@ -13,7 +13,7 @@ export const WeaponTemplates: Record<WeaponType, EntityTemplate> = {
         AmmoType: { name: 'pistol'},
         ReloadSpeed: { ticks: 120 },
         AttackType: { name: 'ranged'},
-        FireRate: { ticks: 30 },
+        FireRate: { ticks: 10 },
     },
     smg: {},
     assault_rifle: {},
