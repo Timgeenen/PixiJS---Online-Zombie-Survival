@@ -1,4 +1,10 @@
-import type { ComponentData, GameSettings, InputSnapshot, Keybindings, Radian } from '@monorepo/shared';
+import type {
+    ComponentData,
+    GameSettings,
+    InputSnapshot,
+    Keybindings,
+    Radian,
+} from '@monorepo/shared';
 
 export type InputState = {
     up: boolean;
@@ -39,8 +45,8 @@ export default class InputManager {
         aimLeft: false,
         aimRight: false,
         shoot: false,
-        reload: false
-    }
+        reload: false,
+    };
     private pressed = {
         up: false,
         down: false,
@@ -84,14 +90,14 @@ export default class InputManager {
         return inputs;
     }
 
-    getMovement(radian: Radian | null): {mx: number, my: number} {
+    getMovement(radian: Radian | null): { mx: number; my: number } {
         if (radian) {
             return {
                 mx: Math.cos(radian),
-                my: Math.sin(radian)
-            }
+                my: Math.sin(radian),
+            };
         }
-        return { mx: 0, my: 0 }
+        return { mx: 0, my: 0 };
     }
 
     addSnapshot() {
@@ -99,7 +105,7 @@ export default class InputManager {
         if (this.prevInputState && this.prevInputState === inputState) {
             return;
         }
-        const {aimLeft, aimRight, aimUp, aimDown, left, right, up, down} = this.inputState;
+        const { aimLeft, aimRight, aimUp, aimDown, left, right, up, down } = this.inputState;
         const aimRadian = this.getRadian(aimLeft, aimRight, aimUp, aimDown);
         const walkRadian = this.getRadian(left, right, up, down);
         const { mx, my } = this.getMovement(walkRadian);
@@ -119,16 +125,16 @@ export default class InputManager {
 
     getRadian(left: boolean, right: boolean, up: boolean, down: boolean): Radian | null {
         if (left) {
-            return up ? (5 * Math.PI) / 4 : down ? (3 * Math.PI) / 4 : Math.PI
+            return up ? (5 * Math.PI) / 4 : down ? (3 * Math.PI) / 4 : Math.PI;
         }
         if (right) {
-            return up ? (7 * Math.PI) / 4 : down ? Math.PI / 4 : 2 * Math.PI
+            return up ? (7 * Math.PI) / 4 : down ? Math.PI / 4 : 2 * Math.PI;
         }
         if (up) {
             return left ? (5 * Math.PI) / 4 : right ? (7 * Math.PI) / 4 : (3 * Math.PI) / 2;
         }
         if (down) {
-            return left ? (3 * Math.PI) / 4 : right ? Math.PI / 4 : Math.PI / 2
+            return left ? (3 * Math.PI) / 4 : right ? Math.PI / 4 : Math.PI / 2;
         }
         return null;
     }
@@ -146,75 +152,82 @@ export default class InputManager {
     handleKeyup(e: KeyboardEvent): void {
         e.preventDefault();
 
-const event = this.keybindings[e.key.toUpperCase()];
-if (!event) return;
+        const event = this.keybindings[e.key.toUpperCase()];
+        if (!event) return;
 
-switch (event) {
-    case 'up':
-        return this.handleKeyupUp();
-    case 'down':
-        return this.handleKeyupDown();
-    case 'left':
-        return this.handleKeyupLeft();
-    case 'right':
-        return this.handleKeyupRight();
-    case 'aimUp':
-        return this.handleKeyupAimUp();
-    case 'aimDown':
-        return this.handleKeyupAimDown();
-    case 'aimLeft':
-        return this.handleKeyupAimLeft();
-    case 'aimRight':
-        return this.handleKeyupAimRight();
-    case 'shoot':
-        return this.handleKeyupShoot();
-    case 'reload':
-        return this.handleKeyupReload();
-    case 'nextWeapon': return;
-    case 'prevWeapon': return;
-    default:
-        console.error('Unhandled keyboard event', event);
-}
+        switch (event) {
+            case 'up':
+                return this.handleKeyupUp();
+            case 'down':
+                return this.handleKeyupDown();
+            case 'left':
+                return this.handleKeyupLeft();
+            case 'right':
+                return this.handleKeyupRight();
+            case 'aimUp':
+                return this.handleKeyupAimUp();
+            case 'aimDown':
+                return this.handleKeyupAimDown();
+            case 'aimLeft':
+                return this.handleKeyupAimLeft();
+            case 'aimRight':
+                return this.handleKeyupAimRight();
+            case 'shoot':
+                return this.handleKeyupShoot();
+            case 'reload':
+                return this.handleKeyupReload();
+            case 'nextWeapon':
+                return;
+            case 'prevWeapon':
+                return;
+            default:
+                console.error('Unhandled keyboard event', event);
+        }
     }
 
     handleKeydown(e: KeyboardEvent): void {
         e.preventDefault();
 
-const event = this.keybindings[e.key.toUpperCase()];
-if (!event) return;
+        const event = this.keybindings[e.key.toUpperCase()];
+        if (!event) return;
 
-switch (event) {
-    case 'up':
-        return this.handleKeydownUp();
-    case 'down':
-        return this.handleKeydownDown();
-    case 'left':
-        return this.handleKeydownLeft();
-    case 'right':
-        return this.handleKeydownRight();
-    case 'aimUp':
-        return this.handleKeydownAimUp();
-    case 'aimDown':
-        return this.handleKeydownAimDown();
-    case 'aimLeft':
-        return this.handleKeydownAimLeft();
-    case 'aimRight':
-        return this.handleKeydownAimRight();
-    case 'shoot':
-        return this.handleKeydownShoot();
-    case 'reload':
-        return this.handleKeydownReload();
-    case 'nextWeapon':
-        return this.handleKeydownNextWeapon();
-    case 'prevWeapon':
-        return this.handleKeydownPrevWeapon();
-    default:
-        console.error('Unhandled keyboard event', event);
-}
+        switch (event) {
+            case 'up':
+                return this.handleKeydownUp();
+            case 'down':
+                return this.handleKeydownDown();
+            case 'left':
+                return this.handleKeydownLeft();
+            case 'right':
+                return this.handleKeydownRight();
+            case 'aimUp':
+                return this.handleKeydownAimUp();
+            case 'aimDown':
+                return this.handleKeydownAimDown();
+            case 'aimLeft':
+                return this.handleKeydownAimLeft();
+            case 'aimRight':
+                return this.handleKeydownAimRight();
+            case 'shoot':
+                return this.handleKeydownShoot();
+            case 'reload':
+                return this.handleKeydownReload();
+            case 'nextWeapon':
+                return this.handleKeydownNextWeapon();
+            case 'prevWeapon':
+                return this.handleKeydownPrevWeapon();
+            default:
+                console.error('Unhandled keyboard event', event);
+        }
     }
 
     isAiming(): boolean {
-        if (this.inputState.aimDown || this.inputState.aimUp || this.inputState.aimLeft || this.inputState.aimRight) {
+        if (
+            this.inputState.aimDown ||
+            this.inputState.aimUp ||
+            this.inputState.aimLeft ||
+            this.inputState.aimRight
+        ) {
             return true;
         }
         return false;

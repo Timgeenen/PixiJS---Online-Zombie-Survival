@@ -4,10 +4,8 @@ import type ClientGame from './ClientGame';
 
 export default class NetworkSyncSystem extends System {
     constructor(protected game: ClientGame) {
-        super()
+        super();
     }
 
-    override update(dt: number): void {
-        
-    }
+    override update(dt: number): void {}
 }

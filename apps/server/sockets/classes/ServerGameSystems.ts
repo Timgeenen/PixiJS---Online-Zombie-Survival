@@ -1,4 +1,15 @@
-import { AmmoSystem, FireControlSystem, GameSystems, InputSystem, MovementCommitSystem, MovementPredictSystem, ReloadSystemA, ReloadSystemB, SpawnSystem, WeaponSwitchSystem } from '@monorepo/shared/systems';
+import {
+    AmmoSystem,
+    FireControlSystem,
+    GameSystems,
+    InputSystem,
+    MovementCommitSystem,
+    MovementPredictSystem,
+    ReloadSystemA,
+    ReloadSystemB,
+    SpawnSystem,
+    WeaponSwitchSystem,
+} from '@monorepo/shared/systems';
 import type { ServerGame } from './ServerGame';
 
 export class ServerGameSystems extends GameSystems<ServerGame> {

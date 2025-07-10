@@ -1,10 +1,25 @@
-import { Game, System, type ComponentData, type Entity, type Position, type Radian } from '@monorepo/shared';
+import {
+    Game,
+    System,
+    type ComponentData,
+    type Entity,
+    type Position,
+    type Radian,
+} from '@monorepo/shared';
 import type ClientGame from './ClientGame';
-import { AnimatedSprite, Assets, Sprite, Spritesheet, Texture, TextureSource, type Application } from 'pixi.js';
+import {
+    AnimatedSprite,
+    Assets,
+    Sprite,
+    Spritesheet,
+    Texture,
+    TextureSource,
+    type Application,
+} from 'pixi.js';
 
 export default class RenderSystem extends System {
     spriteMap = new Map<Entity, Sprite | AnimatedSprite>();
-    animations: Record<string | number, Texture<TextureSource<any>>[]> = {}
+    animations: Record<string | number, Texture<TextureSource<any>>[]> = {};
     constructor(
         private game: ClientGame,
         private app: Application,
@@ -28,8 +43,8 @@ export default class RenderSystem extends System {
             if (sprite instanceof AnimatedSprite) {
                 const rotation = this.game.rotationMap.get(e);
                 const justRotated = this.game.justRotatedMap.get(e);
-                if (rotation && justRotated) {   
-                    this.handleRotation(rotation, sprite)
+                if (rotation && justRotated) {
+                    this.handleRotation(rotation, sprite);
                 }
 
                 const isMoving = this.isMoving(e);
@@ -48,15 +63,15 @@ export default class RenderSystem extends System {
         if (!velocity || (velocity.vx === 0 && velocity.vy === 0)) {
             return false;
         }
-        return true
+        return true;
     }
 
     handleRotation(rotation: ComponentData<'Rotation'>, sprite: AnimatedSprite): void {
         if (this.isFacingRight(rotation.rad)) {
             // sprite.rotation = rotation.rad;
-            const spritesheet: Spritesheet = Assets.get('player')
-            sprite.textures = spritesheet.animations['right']!
-            sprite.animationSpeed = .15;
+            const spritesheet: Spritesheet = Assets.get('player');
+            sprite.textures = spritesheet.animations['right']!;
+            sprite.animationSpeed = 0.15;
             sprite.loop = true;
 
             sprite.play();
@@ -64,56 +79,60 @@ export default class RenderSystem extends System {
         }
         if (this.isFacingLeft(rotation.rad)) {
             // sprite.rotation = rotation.rad - Math.PI;
-            const spritesheet: Spritesheet = Assets.get('player')
-            sprite.textures = spritesheet.animations['left']!
-            sprite.animationSpeed = .15;
+            const spritesheet: Spritesheet = Assets.get('player');
+            sprite.textures = spritesheet.animations['left']!;
+            sprite.animationSpeed = 0.15;
             sprite.loop = true;
 
             sprite.play();
-            return
+            return;
         }
         if (this.isFacingUp(rotation.rad)) {
-            const spritesheet: Spritesheet = Assets.get('player')
-            sprite.textures = spritesheet.animations['up']!
-            sprite.animationSpeed = .15;
+            const spritesheet: Spritesheet = Assets.get('player');
+            sprite.textures = spritesheet.animations['up']!;
+            sprite.animationSpeed = 0.15;
             sprite.loop = true;
 
             sprite.play();
-            return
+            return;
         }
         if (this.isFacingDown(rotation.rad)) {
-            const spritesheet: Spritesheet = Assets.get('player')
-            sprite.textures = spritesheet.animations['down']!
-            sprite.animationSpeed = .15;
+            const spritesheet: Spritesheet = Assets.get('player');
+            sprite.textures = spritesheet.animations['down']!;
+            sprite.animationSpeed = 0.15;
             sprite.loop = true;
             sprite.play();
-            return
+            return;
         }
-        sprite.rotation = 0
+        sprite.rotation = 0;
     }
 
     isFacingUp(rad: Radian): boolean {
-        return (rad <= ((Math.PI * 7) / 4) && rad >= ((Math.PI * 5) / 4));
+        return rad <= (Math.PI * 7) / 4 && rad >= (Math.PI * 5) / 4;
     }
     isFacingDown(rad: Radian): boolean {
-        return (rad <= ((Math.PI * 3) / 4) && rad >= ((Math.PI) / 4));
+        return rad <= (Math.PI * 3) / 4 && rad >= Math.PI / 4;
     }
     isFacingLeft(rad: Radian): boolean {
-        return (rad < ((Math.PI * 5) / 4) && rad > ((Math.PI * 3) / 4))
+        return rad < (Math.PI * 5) / 4 && rad > (Math.PI * 3) / 4;
     }
     isFacingRight(rad: Radian): boolean {
-        return (rad > ((Math.PI * 7) / 4) || rad < (Math.PI / 4))
+        return rad > (Math.PI * 7) / 4 || rad < Math.PI / 4;
     }
 
     isAnimated(sprite: Sprite | AnimatedSprite): sprite is AnimatedSprite {
-        return sprite instanceof AnimatedSprite
+        return sprite instanceof AnimatedSprite;
     }
 
     createSprite(e: Entity) {
         const entityType = this.game.entityTypeMap.get(e)!;
         switch (entityType.name) {
-            case 'bullet': this.createBulletSprite(e); break;
-            case 'player': this.createPlayerSprite(e); break;
+            case 'bullet':
+                this.createBulletSprite(e);
+                break;
+            case 'player':
+                this.createPlayerSprite(e);
+                break;
         }
     }
 
@@ -125,10 +144,11 @@ export default class RenderSystem extends System {
         }
     }
 
-
     createBulletSprite(e: Entity) {
         const bulletRef = this.game.ammoTypeMap.get(e);
-        if(!bulletRef) { return console.error('Could not render bullet: no bullet sprite found') }
+        if (!bulletRef) {
+            return console.error('Could not render bullet: no bullet sprite found');
+        }
         const bullet: Texture = Assets.get(bulletRef.name);
         const sprite = Sprite.from(bullet);
         sprite.width = 16;
@@ -138,12 +158,12 @@ export default class RenderSystem extends System {
     }
 
     createPlayerSprite(e: Entity) {
-        const spritesheet: Spritesheet = Assets.get('player')
+        const spritesheet: Spritesheet = Assets.get('player');
         const animation = spritesheet.animations['down']!;
         // const down = animations['down']!
         const sprite = new AnimatedSprite(animation);
-        sprite.animationSpeed = .1
-        sprite.loop = true
+        sprite.animationSpeed = 0.1;
+        sprite.loop = true;
         sprite.play();
         // const textures = spritesheet.textures['zombie2'];
         // const sprite = new Sprite(textures);
@@ -158,6 +178,6 @@ export default class RenderSystem extends System {
         sprite.x = position?.x ?? 0;
         sprite.y = position?.y ?? 0;
         sprite.rotation = rotation?.rad ?? 0;
-        sprite.anchor = .5;
+        sprite.anchor = 0.5;
     }
 }

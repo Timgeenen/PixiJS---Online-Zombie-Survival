@@ -21,7 +21,9 @@ export default class ClientInputSystem extends InputSystem<ClientGame> {
 
     private updateSnapshotQueue(): void {
         const queue = this.inputManager.drain();
-        const q = queue.map(snap => { return { ...snap, tick: this.game.currentTick }});
+        const q = queue.map((snap) => {
+            return { ...snap, tick: this.game.currentTick };
+        });
         this.game.clientData.snapshots = q;
         if (queue.length === 0) {
             return;
@@ -34,7 +36,7 @@ export default class ClientInputSystem extends InputSystem<ClientGame> {
         if (rotation && rotation.rad !== aim) {
             this.game.justRotatedMap.set(entity, {});
         }
-        this.game.rotationMap.set(entity, { rad: aim })
-        return
+        this.game.rotationMap.set(entity, { rad: aim });
+        return;
     }
 }

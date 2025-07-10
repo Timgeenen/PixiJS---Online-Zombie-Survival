@@ -40,7 +40,7 @@ export interface LobbyListListenerEvents {
 export type EmitEvents = GameEmitEvents & LobbyEmitEvents;
 
 export interface GameEmitEvents {
-    game_player_ready: (callback: (response: SocketResponse<void>) => void ) => void
+    game_player_ready: (callback: (response: SocketResponse<void>) => void) => void;
     initialize_game: (callback: (response: SocketResponse<GameState>) => void) => void;
     game_update: (data: ClientData) => void;
     ping: (callback: (response: SocketResponse<ServerTickData>) => void) => void;

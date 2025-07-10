@@ -32,7 +32,7 @@ export default class ReloadSystemB<G extends Game> extends System {
             const reloadSpeed = this.game.reloadSpeedMap.get(weapon);
             if (!reloadSpeed) {
                 console.error('Could not reload weapon: reloadspeed not found');
-                continue
+                continue;
             }
             const weaponCooldowns = this.game.weaponCooldownsMap.get(weapon);
             if (!weaponCooldowns) {

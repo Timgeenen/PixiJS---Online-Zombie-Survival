@@ -14,6 +14,6 @@ export const bulletTemplates: Record<AmmoType, EntityTemplate> = {
         Hitbox: { width: 10, height: 4, offsetX: 5, offsetY: 2 },
         Lifetime: { ticks: 60 },
         Damage: { amount: 10 },
-        AmmoType: { name: 'pistol' }
+        AmmoType: { name: 'pistol' },
     },
 };

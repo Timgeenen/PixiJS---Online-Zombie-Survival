@@ -3,7 +3,7 @@ import type { AmmoType, Entity, EntityTemplate, Position, Radian } from '../sche
 import { bulletBaseTemplate, bulletTemplates } from '../templates/bulletTemplates';
 import { getVelocity } from '../utils';
 
-export type CreateBulletData = { type: AmmoType; owner: Entity; position: Position, aim: Radian };
+export type CreateBulletData = { type: AmmoType; owner: Entity; position: Position; aim: Radian };
 
 export default function createBullet<G extends Game>(
     game: G,
@@ -11,7 +11,7 @@ export default function createBullet<G extends Game>(
     extra?: EntityTemplate,
 ): Entity {
     const e = game.createEntity();
-    const bulletTemplate = bulletTemplates[data.type]
+    const bulletTemplate = bulletTemplates[data.type];
     const template: EntityTemplate = {
         Owner: { entity: data.owner },
         Position: data.position,

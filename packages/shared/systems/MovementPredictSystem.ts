@@ -22,7 +22,7 @@ export default class MovementPredictSystem<G extends Game> extends System {
                 console.error(
                     `[ClientMovementSystem] could not update position: position not found: entity ${e}`,
                 );
-                continue
+                continue;
             }
             const x = position.x + vx * speed.px;
             const y = position.y + vy * speed.px;

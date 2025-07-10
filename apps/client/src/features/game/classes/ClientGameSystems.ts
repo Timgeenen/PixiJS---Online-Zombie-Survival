@@ -1,4 +1,14 @@
-import { AmmoSystem, FireControlSystem, GameSystems, MovementCommitSystem, MovementPredictSystem, ReloadSystemA, ReloadSystemB, SpawnSystem, WeaponSwitchSystem } from '@monorepo/shared/systems';
+import {
+    AmmoSystem,
+    FireControlSystem,
+    GameSystems,
+    MovementCommitSystem,
+    MovementPredictSystem,
+    ReloadSystemA,
+    ReloadSystemB,
+    SpawnSystem,
+    WeaponSwitchSystem,
+} from '@monorepo/shared/systems';
 import type { Application } from 'pixi.js';
 import type ClientGame from './ClientGame';
 import ClientInputSystem from './ClientInputSystem';
@@ -28,6 +38,6 @@ export default class ClientGameSystems extends GameSystems<ClientGame> {
         this.movementPredictSystem = new MovementPredictSystem(game);
         this.movementCommitSystem = new MovementCommitSystem(game);
         this.spawnSystem = new SpawnSystem(game);
-        this.renderSystem = new RenderSystem(game, app)
+        this.renderSystem = new RenderSystem(game, app);
     }
 }

@@ -14,7 +14,7 @@ function GameCanvas(): ReactElement {
     const appRef = useRef<Application>(null);
     const gameRef = useRef<ClientGame>(null);
     const { user } = useAuthStore((state) => state);
-    const { socket } = useSocketStore(state => state);
+    const { socket } = useSocketStore((state) => state);
     useCreateApp({ appRef, canvasRef, setAppCreated });
     useCreateGame(gameRef, appRef, appCreated, setGameCreated);
 
@@ -27,10 +27,10 @@ function GameCanvas(): ReactElement {
             if (!response.success) {
                 return console.error(response.message);
             }
-        })
+        });
 
         return () => {
-            unregisterGameSocket()
+            unregisterGameSocket();
         };
     }, [gameCreated, appCreated]);
 

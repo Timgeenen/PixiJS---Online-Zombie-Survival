@@ -8,14 +8,13 @@ export default class AmmoSystem<G extends Game> extends System {
 
     override update(dt: number): void {
         const queue = this.game.queues.fireReq.splice(0);
-
         while (queue.length > 0) {
             const { weapon, shooter, tick } = queue.shift()!;
             const ammo = this.game.ammoMap.get(weapon);
             const cooldowns = this.game.weaponCooldownsMap.get(weapon);
             if (!ammo) {
                 console.error('Could not find ammo for weapon');
-                continue; 
+                continue;
             }
             if (ammo.current === 0) {
                 if (ammo.total === 0) {
@@ -31,12 +30,17 @@ export default class AmmoSystem<G extends Game> extends System {
             const ammoRef = this.game.ammoTypeMap.get(weapon);
             if (!ammoRef) {
                 console.error('Could not find ammoref');
-                continue
+                continue;
             }
-            ammo.current--
+            ammo.current--;
             this.game.ammoMap.set(weapon, ammo);
             const fireRate = this.game.fireRateMap.get(weapon);
-            if (cooldowns && fireRate) { this.game.weaponCooldownsMap.set(weapon, { ...cooldowns, fireRate: this.game.currentTick + fireRate.ticks }) }
+            if (cooldowns && fireRate) {
+                this.game.weaponCooldownsMap.set(weapon, {
+                    ...cooldowns,
+                    fireRate: this.game.currentTick + fireRate.ticks,
+                });
+            }
             this.game.queues.spawn.push({
                 entityType: 'bullet',
                 templateRef: ammoRef.name,

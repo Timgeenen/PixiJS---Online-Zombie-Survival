@@ -1,5 +1,15 @@
-import { SocketAuthError, SocketBadRequestError, SocketNotFoundError } from '@Errors/customSocketErrors';
-import { clientDataSchema, type ClientData, type GameState, type ServerTickData, type SocketResponse } from '@monorepo/shared';
+import {
+    SocketAuthError,
+    SocketBadRequestError,
+    SocketNotFoundError,
+} from '@Errors/customSocketErrors';
+import {
+    clientDataSchema,
+    type ClientData,
+    type GameState,
+    type ServerTickData,
+    type SocketResponse,
+} from '@monorepo/shared';
 import logger from '@Utils/logger';
 import type { Server, Socket } from 'socket.io';
 import type { GameMap } from './gameMap';
@@ -26,7 +36,7 @@ export function createInitializeGame(
         for (const [entity, player] of game.playerMap) {
             if (player._id === user_id) {
                 setPlayerEntity(socket, entity);
-                userInGame = true
+                userInGame = true;
                 break;
             }
         }
@@ -47,44 +57,57 @@ export function createInitializeGame(
     };
 }
 
-export function createGameReady(socket: Socket, io: Server, gameMap: GameMap): (callback: (response: SocketResponse<undefined>) => void) => void {
+export function createGameReady(
+    socket: Socket,
+    io: Server,
+    gameMap: GameMap,
+): (callback: (response: SocketResponse<undefined>) => void) => void {
     return (callback) => {
         logger.info('Setting player ready status in game');
         const lobby_id = getLobbyId(socket);
         const player_entity = getPlayerEntity(socket);
         const game = gameMap.get(lobby_id);
         if (!game) {
-            throw new SocketNotFoundError('Could not set player connected: game not found', { callback, clientMessage: 'Game not found'});
+            throw new SocketNotFoundError('Could not set player connected: game not found', {
+                callback,
+                clientMessage: 'Game not found',
+            });
         }
         const player = game.playerMap.get(player_entity);
         if (!player) {
-            throw new SocketNotFoundError('Could not set player connected: player not found in game', { callback, clientMessage: 'Player not found in game'})
+            throw new SocketNotFoundError(
+                'Could not set player connected: player not found in game',
+                { callback, clientMessage: 'Player not found in game' },
+            );
         }
         game.playerMap.set(player_entity, { ...player, isReady: true });
         let allPlayersReady = true;
         for (const [_, player] of game.playerMap) {
             if (!player.isReady) {
                 allPlayersReady = false;
-                break
+                break;
             }
         }
         if (allPlayersReady) {
-            logger.info('starting game loop')
+            logger.info('starting game loop');
             const serverTickData = game.startGameLoop(createSendGameUpdate(socket, io));
             io.to(`game_${lobby_id}`).emit('game_start', serverTickData);
         }
-        callback({ message: 'successfully set player ready', success: true, data: undefined })
-    }
+        callback({ message: 'successfully set player ready', success: true, data: undefined });
+    };
 }
 
 export function createSendGameUpdate(socket: Socket, io: Server): (data: GameState) => void {
     const lobby_id = getLobbyId(socket);
     return (data) => {
-        io.to(`game_${lobby_id}`).emit('game_update', data)
-    }
+        io.to(`game_${lobby_id}`).emit('game_update', data);
+    };
 }
 
-export function createUpdateGame(socket: Socket, gameMap: GameMap): (clientData: ClientData) => void {
+export function createUpdateGame(
+    socket: Socket,
+    gameMap: GameMap,
+): (clientData: ClientData) => void {
     return (clientData) => {
         const { data, error } = clientDataSchema.safeParse(clientData);
         if (error) {
@@ -97,10 +120,13 @@ export function createUpdateGame(socket: Socket, gameMap: GameMap): (clientData:
             throw new SocketNotFoundError('Could not update game: game not found in socket map');
         }
         game.systems.inputSystem.snapshots.set(player_entity, data.snapshots);
-    }
+    };
 }
 
-export function createPing(socket: Socket, gameMap: GameMap): (callback: (response: SocketResponse<ServerTickData>) => void) => void {
+export function createPing(
+    socket: Socket,
+    gameMap: GameMap,
+): (callback: (response: SocketResponse<ServerTickData>) => void) => void {
     return (callback) => {
         const lobby_id = getLobbyId(socket);
         const game = gameMap.get(lobby_id);
@@ -108,6 +134,6 @@ export function createPing(socket: Socket, gameMap: GameMap): (callback: (respon
             throw new SocketNotFoundError('Could not get socket tick data: game not found');
         }
         const data = game.getServerTickData();
-        callback({ success: true, message: 'ping success', data});
-    }
+        callback({ success: true, message: 'ping success', data });
+    };
 }

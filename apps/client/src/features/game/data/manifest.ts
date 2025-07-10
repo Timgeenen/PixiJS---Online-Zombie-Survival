@@ -32,7 +32,7 @@ const bullets: AssetsBundle = {
         },
         shotgun: {
             src: getAssetUrl('shotgun_bullet.png'),
-        }
+        },
     },
 };
 

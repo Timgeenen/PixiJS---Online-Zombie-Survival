@@ -12,14 +12,16 @@ export default class FireControlSystem<G extends Game> {
             const weapon = this.getWeapon(e)?.entity;
             if (!weapon) {
                 console.error('Could not spawn bullet: no weapon found for entity');
-                continue
+                continue;
             }
             const weaponCooldowns = this.getFireCooldown(weapon);
             if (!weaponCooldowns) {
                 console.error('Could not spawn bullet: no weaponcooldowns found');
-                continue
+                continue;
             }
-            if (!this.canShoot(weaponCooldowns)) { continue }
+            if (!this.canShoot(weaponCooldowns)) {
+                continue;
+            }
             this.game.queues.fireReq.push({
                 shooter: e,
                 weapon: weapon,
@@ -29,7 +31,9 @@ export default class FireControlSystem<G extends Game> {
     }
 
     canShoot(cooldowns: ComponentData<'WeaponCooldowns'>): boolean {
-        return cooldowns.fireRate <= this.game.currentTick && cooldowns.reload <= this.game.currentTick;
+        return (
+            cooldowns.fireRate <= this.game.currentTick && cooldowns.reload <= this.game.currentTick
+        );
     }
     getFireCooldown(e: Entity): ComponentData<'WeaponCooldowns'> | undefined {
         return this.game.weaponCooldownsMap.get(e);

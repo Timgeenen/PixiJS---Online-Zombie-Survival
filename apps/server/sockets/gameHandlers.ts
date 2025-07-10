@@ -18,13 +18,13 @@ export function createGameInstance(
     for (const [_, value] of lobby.players) {
         const e = createPlayer(GameInstance, {
             type: 'player',
-            position: { y: 300, x},
-            profile: value
+            position: { y: 300, x },
+            profile: value,
         });
         createWeapon(GameInstance, {
             type: 'pistol',
-            owner: e
-        })
+            owner: e,
+        });
         x += 100;
     }
     gameMap.set(lobby._id, GameInstance);

@@ -37,7 +37,9 @@ export default class InputSystem<G extends Game> extends System {
         let reload = 0;
         let changeWeapon = 0;
         for (const snap of queue) {
-            if (snap.tick < this.game.currentTick) { break }
+            if (snap.tick < this.game.currentTick) {
+                break;
+            }
             changeWeapon += snap.changeWeapon;
             if (snap.reload === 1 && reload === 0) {
                 reload = 1;

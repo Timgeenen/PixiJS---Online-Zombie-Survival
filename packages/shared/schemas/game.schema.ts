@@ -2,10 +2,22 @@ import { z } from 'zod';
 import type { Game } from '../core';
 import { lobbyProfileSchema } from './user.schema';
 
+export enum BufferComponents {
+    Ammo,
+    HP,
+    Position,
+    Rotation,
+    Velocity,
+    IsReloading,
+    CurrentWeapon,
+    LastUpdatedAt,
+    Target,
+    InputState,
+    WeaponInventory,
+}
 export enum NetComponents {
     Ammo,
     HP,
-    Lifetime,
     Position,
     Rotation,
     Velocity,
@@ -79,7 +91,7 @@ export const spawnPlayerReq = z.object({
     templateRef: playerTypeSchema,
     profile: lobbyProfileSchema,
     tick: tickSchema,
-    position: positionSchema.optional()
+    position: positionSchema.optional(),
 });
 export const ComponentSchemas = {
     // PlayerEntity: z.object({ entity: EntitySchema }),
@@ -169,7 +181,7 @@ export const GameEventSchemas = {
     }),
     spawn: z.discriminatedUnion('entityType', [spawnBulletReq, spawnPlayerReq]),
     justSpawned: z.object({
-        entity: EntitySchema
+        entity: EntitySchema,
     }),
     death: z.object({
         target: EntitySchema,
@@ -189,12 +201,12 @@ export const GameEventSchemas = {
     }),
 };
 export const clientDataSchema = z.object({
-    snapshots: z.array(inputSnapshotSchema)
+    snapshots: z.array(inputSnapshotSchema),
 });
 export const serverTickDataSchema = z.object({
     tick: tickSchema,
     serverTimeMs: z.number().int().nonnegative(),
-})
+});
 
 export type GameEntities = z.infer<typeof GameEntitiesSchema>;
 export type Radian = z.infer<typeof radSchema>;
