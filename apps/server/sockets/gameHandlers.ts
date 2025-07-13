@@ -1,4 +1,10 @@
-import type { ComponentData, GameState, PublicLobbyProfile } from '@monorepo/shared';
+import type {
+    ComponentData,
+    GameState,
+    PublicLobbyProfile,
+    ServerPacket,
+    ServerTickData,
+} from '@monorepo/shared';
 import logger from '@Utils/logger';
 import type { ServerLobby } from './classes/Lobby';
 import { ServerGame } from './classes/ServerGame';
@@ -28,6 +34,38 @@ export function createGameInstance(
         x += 100;
     }
     gameMap.set(lobby._id, GameInstance);
+}
+
+export function startGameLoop(
+    game: ServerGame,
+    sendClientUpdate: (packet: ServerPacket) => void,
+): void {
+    let previous = performance.now();
+    let accumulator = 0;
+    function gameLoop(): void {
+        if (game.gameEnd) {
+            logger.info('Game ended');
+            return;
+        }
+        const now = performance.now();
+        const delta = now - previous;
+        accumulator += delta;
+        previous = now;
+        while (accumulator >= game.tickDt) {
+            game.update(game.tickDt);
+            if (game.currentTick % 3 === 0) {
+                const packet = game.createPacket();
+                if (packet) {
+                    sendClientUpdate(packet);
+                }
+            }
+            accumulator -= game.tickDt;
+        }
+        setTimeout(() => {
+            gameLoop();
+        }, game.tickDt - accumulator);
+    }
+    gameLoop();
 }
 
 // export function createNewPlayer(

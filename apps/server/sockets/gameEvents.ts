@@ -7,6 +7,7 @@ import {
     clientDataSchema,
     type ClientData,
     type GameState,
+    type ServerPacket,
     type ServerTickData,
     type SocketResponse,
 } from '@monorepo/shared';
@@ -16,6 +17,7 @@ import type { GameMap } from './gameMap';
 import { getLobbyId, getPlayerEntity, getUserId, setPlayerEntity } from './socketData';
 import type { SocketInstance } from '.';
 import type { ServerGame } from './classes/ServerGame';
+import { startGameLoop } from './gameHandlers';
 
 export function createInitializeGame(
     socket: Socket,
@@ -90,17 +92,18 @@ export function createGameReady(
         }
         if (allPlayersReady) {
             logger.info('starting game loop');
-            const serverTickData = game.startGameLoop(createSendGameUpdate(socket, io));
+            startGameLoop(game, createSendGameUpdate(socket, io));
+            const serverTickData = game.getServerTickData();
             io.to(`game_${lobby_id}`).emit('game_start', serverTickData);
         }
         callback({ message: 'successfully set player ready', success: true, data: undefined });
     };
 }
 
-export function createSendGameUpdate(socket: Socket, io: Server): (data: GameState) => void {
+export function createSendGameUpdate(socket: Socket, io: Server): (packet: ServerPacket) => void {
     const lobby_id = getLobbyId(socket);
-    return (data) => {
-        io.to(`game_${lobby_id}`).emit('game_update', data);
+    return (packet) => {
+        io.to(`game_${lobby_id}`).emit('game_update', packet);
     };
 }
 

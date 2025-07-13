@@ -14,8 +14,10 @@ import type ClientGame from './ClientGame';
 import ClientInputSystem from './ClientInputSystem';
 import InputManager from './inputManager';
 import RenderSystem from './RenderSystem';
+import NetworkSyncSystem from './NetworkSyncSystem';
 
 export default class ClientGameSystems extends GameSystems<ClientGame> {
+    networkSyncSystem: NetworkSyncSystem;
     inputSystem: ClientInputSystem;
     weaponSwitchSystem: WeaponSwitchSystem<ClientGame>;
     reloadSystemA: ReloadSystemA<ClientGame>;
@@ -29,6 +31,7 @@ export default class ClientGameSystems extends GameSystems<ClientGame> {
 
     constructor(game: ClientGame, inputManager: InputManager, app: Application) {
         super(game);
+        this.networkSyncSystem = new NetworkSyncSystem(game);
         this.inputSystem = new ClientInputSystem(game, inputManager);
         this.weaponSwitchSystem = new WeaponSwitchSystem(game);
         this.reloadSystemA = new ReloadSystemA(game);

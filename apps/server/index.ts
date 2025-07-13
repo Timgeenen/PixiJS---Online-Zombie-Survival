@@ -41,6 +41,7 @@ socket.init();
 //Handle uncaught errors
 process.on('uncaughtException', (err) => {
     logger.error(`Uncaught Exception: ${err}`);
+    logger.error(err.stack);
     process.exit(1);
 });
 

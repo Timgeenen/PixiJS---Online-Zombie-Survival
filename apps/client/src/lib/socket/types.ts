@@ -7,6 +7,7 @@ import type {
     LobbyListData,
     LobbySettings,
     PublicLobbyProfile,
+    ServerPacket,
     ServerTickData,
     SocketResponse,
 } from '@monorepo/shared';
@@ -47,7 +48,7 @@ export interface GameEmitEvents {
 }
 
 export interface GameListenerEvents {
-    game_update: (gameState: GameState) => void;
+    game_update: (gameState: ServerPacket) => void;
     game_start: (gameData: ServerTickData) => void;
 }
 

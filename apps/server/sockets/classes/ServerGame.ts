@@ -1,36 +1,48 @@
 import {
+    BITS,
     ComponentSchemas,
     Game,
+    NetComponents,
     TICK,
     type ComponentData,
     type ComponentType,
     type Entity,
     type GameState,
+    type Mask,
+    type ServerPacket,
     type ServerTickData,
 } from '@monorepo/shared';
 import { ServerGameSystems } from './ServerGameSystems';
 import logger from '@Utils/logger';
 
 export class ServerGame extends Game {
-    // dirtyMask: Mask;
     private entityId = 0;
-    private gameLoopRef: NodeJS.Timeout | null = null;
     public systems: ServerGameSystems;
+    public dirtyMaskMap: Map<Entity, Mask>;
+    public gameEnd: boolean = false;
+    // public newEntities: Set<Entity>;
 
     constructor(data: GameState) {
         super(data);
         this.systems = new ServerGameSystems(this);
-        // this.dirtyMask = { bits: new Uint32Array(BITS) }
+        this.dirtyMaskMap = new Map();
+        // this.newEntities = new Set();
     }
 
-    public startGameLoop(updateFn: (data: GameState) => void): ServerTickData {
+    public startGameLoop(sendClientUpdate: (packet: ServerPacket) => void): ServerTickData {
         const data = this.getServerTickData();
-        this.gameLoopRef = setInterval(() => {
+        let previous = performance.now();
+        setInterval(() => {
             this.update(this.tickDt);
-            const state = this.getState();
-            updateFn(state);
-        }, TICK * 1000);
-        return data;
+            if (this.currentTick % 3 === 0) {
+                const packet = this.createPacket();
+                if (!packet) {
+                    return;
+                }
+                sendClientUpdate(packet);
+            }
+        }, this.tickDt);
+        return data; //TODO: change interval to performance loop
     }
 
     public getServerTickData(): ServerTickData {
@@ -53,6 +65,63 @@ export class ServerGame extends Game {
         this.systems.spawnSystem.update(dt);
     }
 
+    public createPacket(): ServerPacket | null {
+        const packet = {
+            tick: this.currentTick,
+            data: {},
+        } as ServerPacket;
+        if (this.dirtyMaskMap.size === 0) {
+            return null;
+        }
+        for (const [e, value] of this.dirtyMaskMap) {
+            for (let i = 0; i < value.bits.length; i++) {
+                const dirtyMask = value.bits[i];
+                if (!dirtyMask) {
+                    continue;
+                }
+
+                for (let j = 0; j < NetComponents.Count; j++) {
+                    const mask = 1 << j;
+                    if (dirtyMask & mask) {
+                        const component = NetComponents[j];
+                        const map = this.getMap(component! as ComponentType);
+                        const componentData = map.get(e);
+                        if (!componentData) {
+                            console.error(
+                                `Could not add dirty component to server packet: ${component} | component not found`,
+                            );
+                            continue;
+                        }
+                        if (!(e in packet.data)) {
+                            packet.data[e] = {
+                                mask: { bits: [...value.bits] },
+                                components: [],
+                            };
+                        }
+                        packet.data[e]!.components.push(componentData);
+                    }
+                }
+            }
+        }
+        this.dirtyMaskMap.clear();
+        return packet;
+    }
+
+    public createMask(e: Entity): Mask {
+        const mask = { bits: new Uint32Array(BITS) };
+        this.dirtyMaskMap.set(e, mask);
+        return mask;
+    }
+
+    public setDirtyBit(e: Entity, component: ComponentType): Mask {
+        const mask = this.dirtyMaskMap.get(e) ?? this.createMask(e);
+        const bit = NetComponents[component as keyof typeof NetComponents];
+        const index = Math.floor(bit / 32);
+        mask.bits[index]! |= 1 << bit;
+        this.dirtyMaskMap.set(e, mask);
+        return mask;
+    }
+
     override createEntity(): Entity {
         const entity = this.entityId++;
         this.createComponent(entity, 'CreatedAt', { tick: this.currentTick });
@@ -65,6 +134,9 @@ export class ServerGame extends Game {
         value: ComponentData<K>,
     ): void {
         this._rootCreateComponent(e, component, value, this.currentTick);
+        if (this.isNetComponent(component)) {
+            this.setDirtyBit(e, component);
+        }
     }
 
     override updateComponent<K extends ComponentType>(
@@ -73,6 +145,9 @@ export class ServerGame extends Game {
         value: ComponentData<K>,
     ): void {
         this._rootUpdateComponent(e, component, value, this.currentTick);
+        if (this.isNetComponent(component)) {
+            this.setDirtyBit(e, component);
+        }
     }
 
     public getState(): GameState {

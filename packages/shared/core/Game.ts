@@ -3,6 +3,7 @@ import {
     BufferComponents,
     ComponentSchemas,
     NetComponents,
+    type BufferArray,
     type ComponentData,
     type ComponentType,
     type Entity,
@@ -189,6 +190,9 @@ export abstract class Game {
         tick: Tick,
     ): void {
         const map = this.getMap(component);
+        if (JSON.stringify(value) === JSON.stringify(map.get(e))) {
+            return;
+        }
         map.set(e, value);
         if (this.isBufferComponent(component)) {
             this.addBufferTick(e, component, value, tick);
@@ -213,15 +217,11 @@ export abstract class Game {
         const data = { ...value, tick };
         const buffer = bufferMap.get(e) ?? [];
         buffer.push(data);
-        const filtered = this.filterBuffer(buffer, component, tick);
+        const filtered = this.filterBuffer(buffer, tick);
         bufferMap.set(e, filtered);
     }
 
-    public filterBuffer<K extends ComponentType>(
-        buffer: Array<ComponentData<K> & { tick: Tick }>,
-        component: K,
-        latestTick: Tick,
-    ): Array<ComponentData<K> & { tick: Tick }> {
+    public filterBuffer(buffer: BufferArray, latestTick: Tick): BufferArray {
         const expireTick = latestTick - this.bufferSize;
         const clean = buffer.filter((data) => data.tick >= expireTick);
         if (buffer.length > this.bufferSize) {

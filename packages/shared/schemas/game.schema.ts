@@ -8,7 +8,6 @@ export enum BufferComponents {
     Position,
     Rotation,
     Velocity,
-    IsReloading,
     CurrentWeapon,
     LastUpdatedAt,
     Target,
@@ -24,8 +23,8 @@ export enum NetComponents {
     WeaponInventory,
     Count, //keep last for caculating total bytes
 }
-// export const BITS = Math.ceil(NetComponents.Count) / 32;
-// export type Mask = { bits: Uint32Array}
+
+export const BITS = Math.ceil(NetComponents.Count / 32);
 export const gameDifficultiesSchema = z.enum(['easy', 'normal', 'hard']);
 export const gameModesSchema = z.enum(['solo', 'multiplayer']);
 export const radSchema = z
@@ -208,6 +207,8 @@ export const serverTickDataSchema = z.object({
     serverTimeMs: z.number().int().nonnegative(),
 });
 
+export type PacketMask = { bits: Array<number> };
+export type Mask = { bits: Uint32Array };
 export type GameEntities = z.infer<typeof GameEntitiesSchema>;
 export type Radian = z.infer<typeof radSchema>;
 export type SpawnBulletReq = z.infer<typeof spawnBulletReq>;
@@ -235,6 +236,11 @@ export type InputState = z.infer<typeof inputStateSchema>;
 export type ClientData = z.infer<typeof clientDataSchema>;
 export type ServerTickData = z.infer<typeof serverTickDataSchema>;
 export type Tick = z.infer<typeof tickSchema>;
+export type ServerPacket = {
+    tick: Tick;
+    data: Record<Entity, { mask: PacketMask; components: ComponentData<ComponentType>[] }>;
+};
+export type BufferArray = Array<{ [key: string]: any; tick: Tick }>;
 // {
 //   [K in keyof typeof ComponentSchemas]?: Record<Entity, ZodToType<(typeof ComponentSchemas)[K]>>
 // };
